@@ -57,5 +57,76 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   });
 
+  // Copy-to-clipboard for any .copiable-name element
+  function showCopied(el){
+    el.classList.add('copied');
+    setTimeout(()=>el.classList.remove('copied'),1200);
+  }
+
+  document.querySelectorAll('.copiable-name').forEach(wrapper=>{
+    const nameEl = wrapper.querySelector('.name-text');
+    if(!nameEl) return;
+    const text = nameEl.textContent.trim();
+
+  // click handler
+  wrapper.addEventListener('click', async (e)=>{
+      try{
+        await navigator.clipboard.writeText(text);
+        showCopied(wrapper);
+      }catch(err){
+        // fallback: select text
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); showCopied(wrapper);}catch(e){} ta.remove();
+      }
+    });
+
+    // keyboard support: Enter / Space
+    wrapper.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault(); wrapper.click();
+      }
+    });
+    // prevent icon clicks from copying; allow clicking the +N to expand icons
+    const icons = wrapper.querySelector('.copy-icons');
+    if(icons){
+      icons.addEventListener('click', (ev)=>{
+        const more = ev.target.closest('.icon-more');
+        if(more){
+          // toggle expanded state
+          icons.classList.toggle('expanded');
+          // update badge text
+          const badge = icons.querySelector('.icon-more');
+          if(icons.classList.contains('expanded')) badge.textContent = '—'; else badge.textContent = '+1';
+          // stop propagation so parent doesn't copy
+          ev.stopPropagation();
+          ev.preventDefault();
+          return;
+        }
+        // if clicking an image, prevent it from bubbling to wrapper to avoid copy
+        if(ev.target && ev.target.tagName === 'IMG'){
+          ev.stopPropagation();
+        }
+      });
+    }
+  });
+
+  // Mikus: copy 'vadigr123' when clicked/activated
+  document.querySelectorAll('.copiable-mikus').forEach(el=>{
+    const toCopy = 'vadigr123';
+    el.addEventListener('click', async (e)=>{
+      try{ await navigator.clipboard.writeText(toCopy); }
+      catch(err){ const ta=document.createElement('textarea'); ta.value=toCopy; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+      el.classList.add('copied'); setTimeout(()=>el.classList.remove('copied'),900);
+    });
+    el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); el.click(); } });
+    const icons = el.querySelector('.mikus-icons'); if(icons){ icons.addEventListener('click', ev=>{ ev.stopPropagation(); }); }
+  });
+
+  // Ensure copy-feedback element exists for Mikus; provide visual text if not in markup
+  document.querySelectorAll('.copiable-mikus').forEach(el=>{
+    if(!el.querySelector('.copy-feedback')){
+      const fb = document.createElement('span'); fb.className = 'copy-feedback'; fb.textContent = 'Скопійовано'; el.appendChild(fb);
+    }
+  });
+
 });
 

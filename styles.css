@@ -29,6 +29,12 @@ body{
 h1{font-size:2.2rem;margin:18px 0 6px}
 .accent{color:var(--accent)}
 .lead{color:var(--muted);font-size:1.05rem}
+
+/* Center all h2 headings site-wide */
+h2{text-align:center;margin-top:0}
+
+/* Center the specific section sub-heading 'Чим цікавлюсь' */
+h3{text-align:center;margin-top:12px}
 .quick-links{margin-top:12px}
 .quick-links a{color:#fff;margin:0 8px;text-decoration:none;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,0.02)}
 
@@ -56,8 +62,32 @@ ul{padding-left:1.1rem}
 .music-right{flex:1}
 
 .social-buttons{display:flex;gap:10px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;text-decoration:none;background:rgba(255,255,255,0.03);color:#fff}
-.btn img{width:22px;height:22px}
+.social-buttons{justify-content:center}
+#socials-content{display:flex;flex-direction:column;align-items:center;gap:10px}
+#socials-content p{margin:0;text-align:center}
+
+/* Rainbow animated text used only for the socials 'Nikitoss2ss' label */
+.rainbow-text{background:linear-gradient(90deg,#ff3b3b,#ff7a2b,#ffd93b,#4be39a,#4bd1ff,#7a6bff,#ff4fd4);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbow 6s linear infinite}
+@keyframes rainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;text-decoration:none;background:rgba(255,255,255,0.03);color:#fff;font-size:0.98rem}
+.btn img{width:20px;height:20px}
+
+/* Telegram sticker links: use site `.btn` visual style so they match the site */
+.btn-telegram{background:rgba(255,255,255,0.03);border-radius:10px;padding:8px 12px;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,0.03);font-size:0.98rem}
+.btn-telegram img{width:20px;height:20px}
+
+/* Optional compact variant: add `.compact` when space is tight */
+.btn-telegram.compact{padding:6px 10px}
+
+/* Force compact look for sticker anchors specifically (higher specificity) */
+a.btn.btn-telegram, a.btn.btn-telegram.compact{
+  padding:6px 10px !important;
+  font-size:0.95rem !important;
+  min-height:0 !important;
+}
+a.btn.btn-telegram img, a.btn.btn-telegram.compact img{
+  width:16px !important; height:16px !important;
+}
 
 .thanks{text-align:center}
 .thanks-logos{display:flex;gap:12px;justify-content:center;align-items:center;margin:12px 0}
@@ -77,5 +107,147 @@ ul{padding-left:1.1rem}
 /* small helpers */
 .small{font-size:0.95rem}
 code{background:rgba(255,255,255,0.03);padding:4px 6px;border-radius:6px}
+
+/* Simple collapsible (details/summary) styling used for about/characters sections */
+details.collapsible{background:transparent}
+details.collapsible summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:10px 14px;margin:-22px -22px 12px;border-radius:10px;background:rgba(255,255,255,0.02);color:#fff}
+details.collapsible summary h2{margin:0;font-size:1.4rem}
+/* hide default marker */
+details.collapsible summary::-webkit-details-marker{display:none}
+details.collapsible summary::marker{display:none}
+/* slightly different look when open */
+details.collapsible[open] summary{background:linear-gradient(90deg, rgba(255,43,43,0.06), rgba(255,122,43,0.04));box-shadow:0 4px 12px rgba(0,0,0,0.5)}
+
+/* ensure inner content keeps original padding */
+details.collapsible > *:not(summary){padding-top:6px}
+
+/* keyboard focus for accessibility */
+details.collapsible summary:focus{outline:3px solid rgba(255,43,43,0.25);outline-offset:3px}
+details.collapsible summary:focus:not(:focus-visible){outline:none}
+
+/* Copyable name UI */
+.copiable-name{display:inline-flex;align-items:center;gap:8px;position:relative}
+.copiable-name{position:relative;display:inline-block}
+.copiable-name .name-text{cursor:pointer}
+/* icons shelf positioned above the name */
+.copiable-name .copy-icons{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(6px);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:280px;padding:6px;border-radius:10px;background:rgba(0,0,0,0.48);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .12s ease,transform .12s ease}
+.copiable-name:hover .copy-icons, .copiable-name:focus-within .copy-icons{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.copy-icons img{width:20px;height:20px;border-radius:6px}
+/* show only first 6 icons when not expanded */
+.copy-icons:not(.expanded) img:nth-child(n+7){display:none}
+.icon-more{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.06);color:#fff;font-size:0.8rem;cursor:pointer;margin-left:4px}
+.copy-feedback{position:absolute;top:-34px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:6px 8px;border-radius:8px;font-size:0.85rem;opacity:0;pointer-events:none;transition:opacity .18s ease}
+.copiable-name.copied .copy-feedback{opacity:1}
+
+/* icon item with label shown on hover */
+.copy-icons .icon-item{display:inline-flex;flex-direction:column;align-items:center;font-size:0.7rem;color:var(--muted);gap:6px;margin:0 2px}
+.copy-icons .icon-item img{width:20px;height:20px}
+.copy-icons .icon-item .icon-label{opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;color:var(--muted)}
+.copy-icons:hover .icon-item .icon-label,.copy-icons.expanded .icon-item .icon-label{opacity:1;transform:translateY(0)}
+
+/* Mikus badges: show ko-fi and civitai above the name on hover */
+.copiable-mikus{position:relative;display:inline-block}
+.mikus-icons{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(6px);display:flex;gap:8px;padding:6px;border-radius:10px;background:rgba(0,0,0,0.48);opacity:0;pointer-events:none;transition:opacity .12s,transform .12s}
+.copiable-mikus:hover .mikus-icons,.copiable-mikus:focus-within .mikus-icons{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.mikus-icons .icon-item{display:inline-flex;flex-direction:column;align-items:center;color:var(--muted);font-size:0.75rem}
+.mikus-icons .icon-item img{width:20px;height:20px}
+.mikus-icons .icon-label{margin-top:4px}
+
+/* Mikus copy feedback */
+.copiable-mikus .copy-feedback{position:absolute;top:-32px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:6px 8px;border-radius:8px;font-size:0.85rem;opacity:0;pointer-events:none;transition:opacity .15s}
+.copiable-mikus.copied .copy-feedback{opacity:1}
+
+/* sticker button style: telegram-like black/red */
+.btn-stickers{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,var(--bg), rgba(255,43,43,0.08));color:#fff;text-decoration:none;border:1px solid rgba(255,43,43,0.14);font-size:0.95rem}
+.btn-stickers img{width:18px;height:18px}
+
+/* Steam button for favgame (right side) */
+.fav-wrap{display:flex;align-items:center;gap:18px}
+.btn-steam{margin-left:auto;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#0b0b0b,#151515);color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.04);font-size:0.98rem}
+.btn-steam img{width:20px;height:20px}
+
+/* Responsive / mobile-first improvements */
+/* Make touch targets larger, provide fluid layouts for phone/tablet/desktop/TV/VR */
+/* Touch target baseline (no forced min-height so buttons keep original sizing) */
+.btn, .btn-stickers, .btn-steam, .quick-links a, .copy-icons .icon-more{
+  line-height:1.1;display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+/* Mobile: phones (portrait) - stack everything, make fonts comfortable */
+@media (max-width:600px){
+  .hero{padding:40px 12px 24px}
+  .hero-avatar{width:96px;height:96px}
+  h1{font-size:1.5rem}
+  .lead{font-size:0.95rem}
+  .quick-links a{padding:8px 10px;font-size:0.95rem}
+  main{padding:0 12px 60px}
+  .content-grid{grid-template-columns:1fr;gap:12px}
+  .panel{padding:8px}
+  .chars figure{flex:1 1 160px}
+  .chars img{height:160px}
+  .music-left img{width:120px;height:120px}
+  .fav-desc{max-width:100%}
+  .copy-icons{max-width:200px}
+  .copy-icons img{width:18px;height:18px}
+  .btn, .btn-telegram, .btn-stickers, .btn-steam{padding:12px 16px;font-size:1rem}
+  .social-buttons{gap:8px}
+  iframe[width], audio, .mikus{width:100%}
+  details.collapsible summary{padding:12px}
+}
+
+/* Tablet: larger touch targets and two-column where appropriate */
+@media (min-width:601px) and (max-width:1024px){
+  .hero{padding:60px 18px 30px}
+  .hero-avatar{width:120px;height:120px}
+  h1{font-size:1.9rem}
+  .content-grid{grid-template-columns:1fr 240px}
+  .chars img{height:220px}
+  .fav-desc{max-width:520px}
+  .mikus{max-width:420px}
+  .copy-icons{max-width:240px}
+  .btn{padding:10px 14px}
+}
+
+/* Desktop: comfortable spacing and medium-large imagery */
+@media (min-width:1025px) and (max-width:1919px){
+  html{font-size:16px}
+  .hero{padding:100px 24px 60px}
+  .hero-avatar{width:160px;height:160px}
+  h1{font-size:2.4rem}
+  .content-grid{grid-template-columns:1fr 300px}
+  .chars img{height:260px}
+  .bg-slideshow::before{filter:blur(8px) brightness(0.28)}
+}
+
+/* Large screens, TVs, VR: increase scale for readability and remote/touch use */
+@media (min-width:1920px){
+  html{font-size:18px}
+  .hero{padding:140px 60px 80px}
+  .hero-inner{max-width:1400px}
+  .hero-avatar{width:220px;height:220px}
+  h1{font-size:3rem}
+  .content-grid{grid-template-columns:1fr 360px;gap:30px}
+  .chars figure{flex-basis:320px}
+  .chars img{height:420px}
+  .btn{padding:14px 20px;font-size:1.1rem}
+  .copy-icons img{width:26px;height:26px}
+  .mikus{max-width:680px}
+  details.collapsible summary{padding:16px}
+}
+
+/* Ultra-large displays (4k/VR) - add extra spacing */
+@media (min-width:2560px){
+  html{font-size:20px}
+  .hero{padding:180px 80px 100px}
+  .hero-avatar{width:260px;height:260px}
+  h1{font-size:3.6rem}
+  .content-grid{grid-template-columns:1fr 420px;gap:36px}
+}
+
 
 

@@ -67,7 +67,7 @@ ul{padding-left:1.1rem}
 #socials-content p{margin:0;text-align:center}
 
 /* Rainbow animated text used only for the socials 'Nikitoss2ss' label */
-.rainbow-text{background:linear-gradient(90deg,#ff3b3b,#ff7a2b,#ffd93b,#4be39a,#4bd1ff,#7a6bff,#ff4fd4);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbow 6s linear infinite}
+.rainbow-text{background:linear-gradient(90deg,#ff3b3b,#ff7a2b,#ffd93b,#ff0000,#ff7a2b,#fbff00,#ff8800);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rainbow 6s linear infinite}
 @keyframes rainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;text-decoration:none;background:rgba(255,255,255,0.03);color:#fff;font-size:0.98rem}
 .btn img{width:20px;height:20px}
@@ -166,19 +166,160 @@ details.collapsible summary:focus:not(:focus-visible){outline:none}
 .btn-steam{margin-left:auto;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,#0b0b0b,#151515);color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,0.04);font-size:0.98rem}
 .btn-steam img{width:20px;height:20px}
 
-/* Responsive / mobile-first improvements */
-/* Make touch targets larger, provide fluid layouts for phone/tablet/desktop/TV/VR */
-/* Touch target baseline (no forced min-height so buttons keep original sizing) */
-.btn, .btn-stickers, .btn-steam, .quick-links a, .copy-icons .icon-more{
-  line-height:1.1;display:inline-flex;align-items:center;justify-content:center;
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce){
-  *{animation:none!important;transition:none!important}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Mobile: phones (portrait) - stack everything, make fonts comfortable */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Enhanced Animations */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation classes */
+.slide-right {
+  opacity: 0;
+  animation: slideInRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.slide-left {
+  opacity: 0;
+  animation: slideInLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.pop-in {
+  opacity: 0;
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Extend existing delay classes */
+.delay-5 { animation-delay: 1s; }
+.delay-6 { animation-delay: 1.2s; }
+
+/* Add hover effects */
+.chars figure {
+  transition: transform 0.3s ease;
+}
+
+.chars figure:hover {
+  transform: translateY(-5px);
+}
+
+.chars img {
+  transition: transform 0.4s ease;
+}
+
+.chars img:hover {
+  transform: scale(1.02);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+/* Scroll Animations */
+.scroll-fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0, 1);
+}
+
+.scroll-fade-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0, 1);
+}
+
+.scroll-fade-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0, 1);
+}
+
+.scroll-scale {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0, 1);
+}
+
+/* Visible state */
+.scroll-visible {
+  opacity: 1;
+  transform: translate(0) scale(1);
+}
+
+/* Stagger delays for groups */
+.stagger > *:nth-child(1) { transition-delay: 0.1s; }
+.stagger > *:nth-child(2) { transition-delay: 0.2s; }
+.stagger > *:nth-child(3) { transition-delay: 0.3s; }
+.stagger > *:nth-child(4) { transition-delay: 0.4s; }
+.stagger > *:nth-child(5) { transition-delay: 0.5s; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-scale,
+  .card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 @media (max-width:600px){
   .hero{padding:40px 12px 24px}
   .hero-avatar{width:96px;height:96px}
@@ -231,23 +372,7 @@ details.collapsible summary:focus:not(:focus-visible){outline:none}
   .hero-inner{max-width:1400px}
   .hero-avatar{width:220px;height:220px}
   h1{font-size:3rem}
-  .content-grid{grid-template-columns:1fr 360px;gap:30px}
-  .chars figure{flex-basis:320px}
-  .chars img{height:420px}
-  .btn{padding:14px 20px;font-size:1.1rem}
-  .copy-icons img{width:26px;height:26px}
-  .mikus{max-width:680px}
-  details.collapsible summary{padding:16px}
-}
-
-/* Ultra-large displays (4k/VR) - add extra spacing */
-@media (min-width:2560px){
-  html{font-size:20px}
-  .hero{padding:180px 80px 100px}
-  .hero-avatar{width:260px;height:260px}
-  h1{font-size:3.6rem}
-  .content-grid{grid-template-columns:1fr 420px;gap:36px}
-}
+  .content-grid{grid-template-columns:1fr 360px;gap
 
 
 

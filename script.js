@@ -128,5 +128,139 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
+  // Check if user prefers reduced motion
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Only run animations if user hasn't requested reduced motion
+  if (!prefersReducedMotion) {
+    // Animate hero section
+    const heroAvatar = document.querySelector('.hero-avatar');
+    const heroTitle = document.querySelector('h1');
+    const heroLead = document.querySelector('.lead');
+    const quickLinks = document.querySelectorAll('.quick-links a');
+
+    heroAvatar.classList.add('pop-in', 'delay-1');
+    heroTitle.classList.add('slide-right', 'delay-2');
+    heroLead.classList.add('slide-left', 'delay-3');
+
+    quickLinks.forEach((link, index) => {
+      link.classList.add('animate-fade-up', `delay-${index + 3}`);
+    });
+
+    // Animate sections on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Cards
+          if (entry.target.classList.contains('card')) {
+            entry.target.classList.add('revealed');
+          }
+          
+          // Images
+          if (entry.target.tagName === 'IMG') {
+            entry.target.classList.add('pop-in');
+          }
+          
+          // Character figures
+          if (entry.target.tagName === 'FIGURE') {
+            entry.target.classList.add('slide-right');
+          }
+          
+          // Social buttons
+          if (entry.target.classList.contains('btn')) {
+            entry.target.classList.add('slide-up');
+          }
+
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px'
+    });
+
+    // Observe elements
+    document.querySelectorAll('.card, .chars figure, .chars img, .btn, .mikus').forEach(el => {
+      observer.observe(el);
+    });
+  }
+
+  // Check for reduced motion preference
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  // Initial animations
+  const heroAvatar = document.querySelector('.hero-avatar');
+  const heroTitle = document.querySelector('h1');
+  const heroLead = document.querySelector('.lead');
+  
+  heroAvatar.classList.add('pop-in', 'delay-1');
+  heroTitle.classList.add('slide-right', 'delay-2');
+  heroLead.classList.add('slide-left', 'delay-3');
+
+  // Scroll animations observer
+  const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('scroll-visible');
+        
+        // For staggered groups
+        if (entry.target.classList.contains('stagger')) {
+          entry.target.querySelectorAll('.scroll-fade-up, .scroll-fade-left, .scroll-fade-right, .scroll-scale')
+            .forEach(child => child.classList.add('scroll-visible'));
+        }
+      }
+    });
+  }, {
+    threshold: 0.15,
+    rootMargin: '0px'
+  });
+
+  // Observe elements with scroll animations
+  document.querySelectorAll([
+    '.scroll-fade-up',
+    '.scroll-fade-left',
+    '.scroll-fade-right',
+    '.scroll-scale',
+    '.stagger'
+  ].join(',')).forEach(el => scrollObserver.observe(el));
+
+  // Додаємо функціонал для збільшення картинок
+  const zoomableImages = document.querySelectorAll('.chars img, .mikus, .hero-avatar');
+  
+  zoomableImages.forEach(img => {
+      img.classList.add('zoomable');
+      img.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (this.classList.contains('zoomed')) {
+              this.classList.remove('zoomed');
+              document.body.style.overflow = '';
+          } else {
+              this.classList.add('zoomed');
+              document.body.style.overflow = 'hidden';
+          }
+      });
+  });
+
+  // Закриваємо зум при кліку поза картинкою
+  document.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('zoomable')) {
+          document.querySelectorAll('.zoomed').forEach(img => {
+              img.classList.remove('zoomed');
+              document.body.style.overflow = '';
+          });
+      }
+  });
+
+  // Закриваємо зум при натисканні Escape
+  document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+          document.querySelectorAll('.zoomed').forEach(img => {
+              img.classList.remove('zoomed');
+              document.body.style.overflow = '';
+          });
+      }
+  });
 });
 

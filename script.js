@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('year').textContent = new Date().getFullYear();
 
   // slideshow backgrounds for favgame
+  const favBg = document.querySelector('.bg-slideshow::before');
+  // Instead of trying to set pseudo-element, we'll update the container's style
   const favSection = document.querySelector('#favgame');
   const imgs = [
     'Images/Machinarium.jpg',
@@ -227,15 +229,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   if (musicSection) {
     const musicObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.intersectionRatio > 0.1) {
-          document.body.classList.add('music-bg');
-        } else {
-          document.body.classList.remove('music-bg');
-        }
+        document.body.classList.toggle('music-bg', entry.isIntersecting);
       });
     }, {
-      threshold: [0.1],
-      rootMargin: '0px'
+      threshold: 0.4,
+      rootMargin: '-30% 0px -30% 0px'
     });
     musicObserver.observe(musicSection);
   }

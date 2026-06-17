@@ -10,6 +10,12 @@
   <link rel="icon" href="Icons/Card.png">
 </head>
 <body>
+  <!-- Background video overlay (darkening) -->
+  <div id="bg-video-overlay" aria-hidden="true"></div>
+  
+  <!-- Background video (if available) -->
+  <video id="bg-video" aria-hidden="true" muted autoplay loop playsinline></video>
+
   <!-- Abstract animated background -->
   <div id="bg-abstract" aria-hidden="true">
     <div class="shape s1"></div>
@@ -20,28 +26,29 @@
     <div class="shape s6"></div>
   </div>
 
-  <header class="hero">
+  <header class="hero intro-fullscreen">
     <div class="hero-inner">
-      <div class="hero-copy">
-        <p class="eyebrow">Привіт!</p>
-        <h1 class="animate-fade-up">Я — <span class="accent">Nikitoss2ss</span>, люблю ігри разом, спілкування, та контент мейкер </h1>
-        <p class="lead">Вивчаю 3D моделюванням, роблю 2D та 3D анімації, працюю з ШІ. Листай далі, щоб знайти мій стиль, улюблені ігри та плейлисти.</p>
-        <div class="hero-actions scroll-fade-up">
-          <a href="#about" class="btn btn-primary">Про мене</a>
-          <a href="#characters" class="btn btn-tertiary">Персонажі</a>
-          <a href="#favgame" class="btn btn-secondary">Моя улюблена гра</a>
-          <a href="#music" class="btn btn-tertiary">Пісня дня</a>
-          <a href="#socials" class="btn btn-tertiary">Соцмережі</a>
-        </div>
-      </div>
-
       <div class="hero-panel">
         <div class="hero-avatar-wrap">
-          <img src="Images/avatar.png" alt="Nikitoss2ss avatar" class="hero-avatar">
+          <div class="avatar-ring"></div>
+          <img src="Images/avatar.png" alt="Nikitoss2ss avatar" class="hero-avatar hero-avatar-large">
           <div class="hero-badge">Nikitoss2ss</div>
         </div>
       </div>
+
+      <div class="hero-copy">
+        <p class="eyebrow">Привіт, я Nikitoss2ss</p>
+        <h1 class="intro-title">Я люблю пограти, поспілкуватися, та провести час весело!</h1>
+        <p class="lead intro-sub">Заходь далі — тут багато чого цікавого про мене!</p>
+        <div class="hero-actions scroll-fade-up">
+          <a href="#socials" class="btn btn-primary">Соцмережі</a>
+        </div>
+      </div>
     </div>
+    <button class="scroll-indicator" aria-label="Scroll down" title="Scroll down">
+      <span class="arrow-line"></span>
+      <span class="arrow-tip"></span>
+    </button>
   </header>
 
   <main>
@@ -142,8 +149,8 @@
       <details class="collapsible" open>
         <summary aria-controls="music-content"><h2>Мій топ пісень 🎧</h2></summary>
         <div id="music-content" class="spotify-embeds">
+          <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/4Pjht5dwS2BDK7klpDtGaO?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
           <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/2f7EmXogdXeZiUG2bM8LPy?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/5hVghJ4KaYES3BFUATCYn0?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
           <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/4A3WcbBuUQMpcBIgmUzLBY?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
           <!-- Вставляй сюди Spotify iframe коди: -->
           <!-- 
@@ -209,6 +216,7 @@
   <p>© <span id="year"></span> <span class="copiable-name" tabindex="0"><span class="name-text">Nikitoss2ss</span><span class="copy-icons">
                 
               </span><span class="copy-feedback">Скопійовано</span></span> — всі права (майже) належать мені 😉</p>
+  <p class="site-version">v 1.4 · Оновлено: 18.06.2026</p>
   </footer>
 </body>
 </html>

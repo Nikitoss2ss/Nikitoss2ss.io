@@ -2,12 +2,55 @@
 // Basic interactions: slideshow for Machinarium section + footer year + audio metadata helper (simple)
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // Check for cover.webm and use it as background video if available
+  const bgVideo = document.getElementById('bg-video');
+  if (bgVideo) {
+    const videoUrl = 'Images/cover.webm';
+    const fallbackImage = 'Images/cover.jpg';
+    let videoAvailable = false;
+
+    bgVideo.poster = fallbackImage;
+    bgVideo.src = videoUrl;
+    bgVideo.load();
+
+    const setFallback = () => {
+      videoAvailable = false;
+      document.body.classList.add('bg-video-fallback');
+      document.body.classList.remove('bg-video-ready');
+      bgVideo.pause();
+      bgVideo.removeAttribute('src');
+      bgVideo.load();
+    };
+
+    const updateVideoPlayback = () => {
+      if (!videoAvailable) return;
+      const active = document.visibilityState === 'visible' && document.hasFocus();
+      if (active) {
+        bgVideo.play().catch(() => {});
+      } else {
+        bgVideo.pause();
+      }
+    };
+
+    bgVideo.addEventListener('loadeddata', () => {
+      videoAvailable = true;
+      document.body.classList.add('bg-video-ready');
+      document.body.classList.remove('bg-video-fallback');
+      updateVideoPlayback();
+    });
+
+    bgVideo.addEventListener('error', setFallback);
+    bgVideo.addEventListener('stalled', setFallback);
+
+    document.addEventListener('visibilitychange', updateVideoPlayback);
+    window.addEventListener('focus', updateVideoPlayback);
+    window.addEventListener('blur', updateVideoPlayback);
+  }
+
   // footer year
   document.getElementById('year').textContent = new Date().getFullYear();
 
   // slideshow backgrounds for favgame
-  const favBg = document.querySelector('.bg-slideshow::before');
-  // Instead of trying to set pseudo-element, we'll update the container's style
   const favSection = document.querySelector('#favgame');
   const imgs = [
     'Images/Machinarium.jpg',
@@ -129,74 +172,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Check if user prefers reduced motion
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Only run animations if user hasn't requested reduced motion
-  if (!prefersReducedMotion) {
-    // Animate hero section
-    const heroAvatar = document.querySelector('.hero-avatar');
-    const heroTitle = document.querySelector('h1');
-    const heroLead = document.querySelector('.lead');
-    const quickLinks = document.querySelectorAll('.quick-links a');
-
-    heroAvatar.classList.add('pop-in', 'delay-1');
-    heroTitle.classList.add('slide-right', 'delay-2');
-    heroLead.classList.add('slide-left', 'delay-3');
-
-    quickLinks.forEach((link, index) => {
-      link.classList.add('animate-fade-up', `delay-${index + 3}`);
-    });
-
-    // Animate sections on scroll
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Cards
-          if (entry.target.classList.contains('card')) {
-            entry.target.classList.add('revealed');
-          }
-          
-          // Images
-          if (entry.target.tagName === 'IMG') {
-            entry.target.classList.add('pop-in');
-          }
-          
-          // Character figures
-          if (entry.target.tagName === 'FIGURE') {
-            entry.target.classList.add('slide-right');
-          }
-          
-          // Social buttons
-          if (entry.target.classList.contains('btn')) {
-            entry.target.classList.add('slide-up');
-          }
-
-          observer.unobserve(entry.target);
-        }
-      });
-    }, {
-      threshold: 0.1,
-      rootMargin: '0px'
-    });
-
-    // Observe elements
-    document.querySelectorAll('.card, .chars figure, .chars img, .btn, .mikus').forEach(el => {
-      observer.observe(el);
-    });
-  }
-
-  // Check for reduced motion preference
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    return;
-  }
-
-  // Initial animations
-  const heroAvatar = document.querySelector('.hero-avatar');
-  const heroTitle = document.querySelector('h1');
-  const heroLead = document.querySelector('.lead');
-  
-  heroAvatar.classList.add('pop-in', 'delay-1');
-  heroTitle.classList.add('slide-right', 'delay-2');
-  heroLead.classList.add('slide-left', 'delay-3');
-
   // Scroll animations observer
   const scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -229,11 +204,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   if (musicSection) {
     const musicObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        document.body.classList.toggle('music-bg', entry.isIntersecting);
+        if (entry.isIntersecting) {
+          document.body.classList.add('music-bg');
+        } else {
+          document.body.classList.remove('music-bg');
+        }
       });
     }, {
-      threshold: 0.4,
-      rootMargin: '-30% 0px -30% 0px'
+      threshold: 0,
+      rootMargin: '-50% 0px -50% 0px'
     });
     musicObserver.observe(musicSection);
   }
@@ -274,5 +253,59 @@ document.addEventListener('DOMContentLoaded',()=>{
           });
       }
   });
+
+  // --- Intro typing + scroll action ---
+  (function(){
+    const heroIntro = document.querySelector('.hero.intro-fullscreen');
+    const scrollBtn = document.querySelector('.scroll-indicator');
+    if(!heroIntro) return;
+
+    const typedEl = heroIntro.querySelector('.typed');
+    let sequences = [];
+    try{ sequences = typedEl ? JSON.parse(typedEl.getAttribute('data-seq')) : []; }catch(e){ sequences = []; }
+
+    function delay(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+    async function typeTo(el, text, speed=45){
+      el.textContent = '';
+      for(let i=0;i<text.length;i++){
+        el.textContent += text[i];
+        await delay(speed + Math.random()*20);
+      }
+    }
+
+    async function backspace(el, count, speed=28){
+      for(let i=0;i<count;i++){
+        el.textContent = el.textContent.slice(0, -1);
+        await delay(speed + Math.random()*10);
+      }
+    }
+
+    // run sequence
+    (async function(){
+      if(!typedEl || !sequences.length){
+        typedEl && (typedEl.textContent = 'Привіт!');
+        await delay(300);
+        scrollBtn && (scrollBtn.style.opacity = 1);
+        return;
+      }
+      for(let i=0;i<sequences.length;i++){
+        await typeTo(typedEl, sequences[i], 45);
+        await delay(900);
+        if(i < sequences.length - 1) await backspace(typedEl, Math.min(18, sequences[i].length));
+      }
+      if(scrollBtn) scrollBtn.style.opacity = 1;
+    })();
+
+    function scrollToContent(){
+      const main = document.querySelector('main');
+      if(main) main.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    if(scrollBtn) scrollBtn.addEventListener('click', scrollToContent);
+    window.addEventListener('keydown', function keyHandler(e){
+      if(e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') scrollToContent();
+    });
+  })();
 });
 

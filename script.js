@@ -173,31 +173,108 @@ document.addEventListener('DOMContentLoaded',()=>{
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Scroll animations observer
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const desktopOnly = !isMobile;
   const scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('scroll-visible');
-        
-        // For staggered groups
-        if (entry.target.classList.contains('stagger')) {
-          entry.target.querySelectorAll('.scroll-fade-up, .scroll-fade-left, .scroll-fade-right, .scroll-scale')
-            .forEach(child => child.classList.add('scroll-visible'));
-        }
+      const el = entry.target;
+      const isFavGame = el.classList.contains('favgame-animated');
+      const isCharacterCard = el.matches('.chars figure');
+
+      if (el.classList.contains('stagger')) {
+        const children = Array.from(el.children);
+        children.forEach((child, index) => {
+          if (entry.isIntersecting) {
+            const delay = isMobile ? 0 : index * 90;
+            child.style.transitionDelay = `${delay}ms`;
+            child.classList.add('scroll-visible');
+            child.classList.add('is-visible');
+            child.classList.remove('is-hidden');
+          } else {
+            child.classList.remove('scroll-visible');
+            child.classList.remove('is-visible');
+            child.classList.remove('is-hidden');
+            child.classList.remove('is-hovered');
+          }
+        });
+        return;
       }
+
+      if (isFavGame) {
+        if (entry.isIntersecting) {
+          el.classList.add('is-visible');
+          el.classList.remove('is-hidden');
+        } else {
+          el.classList.remove('is-visible');
+          el.classList.add('is-hidden');
+        }
+        return;
+      }
+
+      if (isCharacterCard) {
+        if (entry.isIntersecting) {
+          el.classList.add('is-visible');
+          el.classList.remove('is-hidden');
+        } else {
+          el.classList.remove('is-visible');
+          el.classList.add('is-hidden');
+        }
+        return;
+      }
+
+      const revealTargets = el.classList.contains('scroll-fade-up') || el.classList.contains('scroll-fade-left') || el.classList.contains('scroll-fade-right') || el.classList.contains('scroll-scale')
+        ? [el]
+        : [];
+
+      revealTargets.forEach(target => {
+        if (entry.isIntersecting) {
+          target.classList.add('scroll-visible');
+          target.classList.add('is-visible');
+          target.classList.remove('is-hidden');
+        } else {
+          target.classList.remove('scroll-visible');
+          target.classList.remove('is-visible');
+          target.classList.add('is-hidden');
+        }
+      });
     });
   }, {
-    threshold: 0.15,
-    rootMargin: '0px'
+    threshold: isMobile ? 0.08 : 0.03,
+    rootMargin: isMobile ? '0px 0px -6% 0px' : '0px 0px -18% 0px'
   });
 
   // Observe elements with scroll animations
-  document.querySelectorAll([
+  const revealElements = Array.from(document.querySelectorAll([
     '.scroll-fade-up',
     '.scroll-fade-left',
     '.scroll-fade-right',
     '.scroll-scale',
-    '.stagger'
-  ].join(',')).forEach(el => scrollObserver.observe(el));
+    '.stagger',
+    '.favgame-animated',
+    '.chars figure'
+  ].join(',')));
+
+  revealElements.forEach(el => scrollObserver.observe(el));
+
+  if (supportsHover && desktopOnly) {
+    document.querySelectorAll('.chars figure').forEach(card => {
+      card.addEventListener('pointermove', (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty('--tilt-x', `${(y * -8).toFixed(2)}deg`);
+        card.style.setProperty('--tilt-y', `${(x * 8).toFixed(2)}deg`);
+        card.classList.add('is-hovered');
+      });
+
+      card.addEventListener('pointerleave', () => {
+        card.classList.remove('is-hovered');
+        card.style.removeProperty('--tilt-x');
+        card.style.removeProperty('--tilt-y');
+      });
+    });
+  }
 
   // Change page background when the Music section is visible
   const musicSection = document.querySelector('#music');

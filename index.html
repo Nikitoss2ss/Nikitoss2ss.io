@@ -5,11 +5,40 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Про мене — Nikitoss2ss</title>
-  <link rel="stylesheet" href="styles.css?v=1.5">
+  <link rel="stylesheet" href="styles.css?v=1.7">
   <script src="script.js" defer></script>
   <link rel="icon" href="Icons/Card.png">
+  <link rel="preload" as="image" href="Images/avatar.png" fetchpriority="high">
 </head>
-<body>
+<body class="is-loading">
+  <div class="site-loader" role="status" aria-label="Завантаження сторінки">
+    <div class="loader-code-stream" aria-hidden="true">
+      <span>const atmosphere = await build();</span>
+      <span>render(surface, { depth: true });</span>
+      <span>loading shapes... 68%</span>
+      <span>connect glass layers();</span>
+      <span>assemble interface...</span>
+      <span>ready when the light settles</span>
+    </div>
+    <div class="loader-scene">
+      <span class="loader-orbit loader-orbit-one"></span>
+      <span class="loader-orbit loader-orbit-two"></span>
+      <span class="loader-orb"></span>
+      <span class="loader-spark loader-spark-one"></span>
+      <span class="loader-spark loader-spark-two"></span>
+    </div>
+    <span class="loader-label">Завантажуємо простір</span>
+  </div>
+
+  <svg class="liquid-glass-defs" aria-hidden="true" width="0" height="0" focusable="false">
+    <defs>
+      <filter id="liquid-glass-refraction" x="-18%" y="-18%" width="136%" height="136%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018 0.024" numOctaves="2" seed="26" result="glassNoise" />
+        <feDisplacementMap in="SourceGraphic" in2="glassNoise" scale="14" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
   <!-- Background video overlay (darkening) -->
   <div id="bg-video-overlay" aria-hidden="true"></div>
   
@@ -24,8 +53,23 @@
     <div class="shape s4"></div>
     <div class="shape s5"></div>
     <div class="shape s6"></div>
+    <div class="shape s7"></div>
+    <div class="shape s8"></div>
+    <div class="shape s9"></div>
+    <div class="shape s10"></div>
+    <div class="shape s11"></div>
+    <div class="shape s12"></div>
+    <div class="shape s13"></div>
+    <div class="shape s14"></div>
+    <div class="shape s15"></div>
+    <div class="shape s16"></div>
+    <div class="shape s17"></div>
+    <div class="shape s18"></div>
+    <div class="shape s19"></div>
+    <div class="shape s20"></div>
   </div>
 
+  <div class="site-page">
   <header class="hero intro-fullscreen">
     <div class="hero-inner">
       <div class="hero-panel">
@@ -50,6 +94,11 @@
       <span class="arrow-tip"></span>
     </button>
   </header>
+
+  <button class="back-to-top" type="button" aria-label="Повернутися нагору" title="Повернутися нагору">
+    <span class="arrow-line"></span>
+    <span class="arrow-tip"></span>
+  </button>
 
   <main>
     <!-- ABOUT -->
@@ -96,7 +145,7 @@
         <summary aria-controls="chars-content"><h2 class="scroll-fade-up">Мої персонажі 🎭</h2></summary>
         <div id="chars-content" class="chars stagger">
           <figure class="scroll-fade-left">
-            <img src="Images/kuron.png" alt="Kuron" class="scroll-scale">
+            <img src="Images/kuron.png" alt="Kuron" class="scroll-scale" loading="lazy" decoding="async" width="640" height="640">
             <figcaption>
               <strong>Kuron</strong><br>
               Чорний кемоно дракончик з червоним животом, крилами і вогником на хвості.
@@ -105,7 +154,7 @@
           </figure>
 
           <figure class="scroll-fade-up">
-            <img src="Images/Nikitoss2ss.png" alt="Nikitoss2ss" class="scroll-scale">
+            <img src="Images/Nikitoss2ss.png" alt="Nikitoss2ss" class="scroll-scale" loading="lazy" decoding="async" width="640" height="640">
             <figcaption>
               <strong><span class="copiable-name" tabindex="0"><span class="name-text">Nikitoss2ss</span><span class="copy-icons">
 
@@ -115,7 +164,7 @@
           </figure>
 
           <figure class="scroll-fade-right">
-            <img src="Images/Nikitoss2ss_Minecraft.png" alt="Nikitoss2ss Minecraft" class="scroll-scale">
+            <img src="Images/Nikitoss2ss_Minecraft.png" alt="Nikitoss2ss Minecraft" class="scroll-scale" loading="lazy" decoding="async" width="640" height="640">
             <figcaption>
               <strong><span class="copiable-name" tabindex="0"><span class="name-text">Nikitoss2ss (Майн стиль)</span><span class="copy-icons">
                
@@ -149,9 +198,10 @@
       <details class="collapsible" open>
         <summary aria-controls="music-content"><h2>Мій топ пісень 🎧</h2></summary>
         <div id="music-content" class="spotify-embeds">
-          <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/4Pjht5dwS2BDK7klpDtGaO?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/22mZmxadaPv3MmCT2xRGNq?utm_source=generator&si=28332b9f232940e7" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
           <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/0LHVuW9jBlpAHPtcwWtK8P?utm_source=generator&si=c5084c32efec4d47" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/0YSdOfDlW82BI8CYYyDaCI?utm_source=generator&si=ad05fd6e90984b2a" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/7l6GqlQeKhLoERK0rDzvvm?utm_source=generator&si=836ea43f70894dd6" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          
           <!-- Вставляй сюди Spotify iframe коди: -->
           <!-- 
           <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/..." width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
@@ -202,7 +252,7 @@
 
           <!-- Centered mikus image as requested -->
           <div class="mikus-wrap">
-            <img src="Images/mikus.png" alt="Mikus and team" class="mikus">
+            <img src="Images/mikus.png" alt="Mikus and team" class="mikus" loading="lazy" decoding="async">
           </div>
 
           <p class="links small">Підтримати: 
@@ -216,8 +266,9 @@
   <p>© <span id="year"></span> <span class="copiable-name" tabindex="0"><span class="name-text">Nikitoss2ss</span><span class="copy-icons">
                 
               </span><span class="copy-feedback">Скопійовано</span></span> — всі права (майже) належать мені 😉</p>
-  <p class="site-version">v 1.5 · Оновлено: 25.07.2026</p>
+  <p class="site-version">v 1.7 · Оновлено: 20.08.2026</p>
   </footer>
+  </div>
 </body>
 </html>
 

@@ -40,6 +40,7 @@ jobs:
             if (!response.ok) throw new Error(`Steam API returned ${response.status}`);
             const payload = await response.json();
             const games = (payload.response.games || [])
+              .filter(game => game.appid !== 1814630)
               .sort((a, b) => (b.playtime_2weeks || 0) - (a.playtime_2weeks || 0))
               .slice(0, 3)
               .map(game => ({

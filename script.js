@@ -7,6 +7,36 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.documentElement.style.overflowY = 'hidden';
   document.body.style.overflowY = 'hidden';
 
+  const steamGames = document.querySelector('#steam-games');
+  if (steamGames) {
+    fetch('steam-stats.json', { cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error('Steam stats unavailable');
+        return response.json();
+      })
+      .then(data => {
+        const games = Array.isArray(data.games) ? data.games.slice(0, 3) : [];
+        if (!games.length) {
+          throw new Error('No recently played games');
+        }
+        steamGames.innerHTML = games.map((game, index) => `
+          <article class="steam-game">
+            <span class="steam-game-rank">${index + 1}</span>
+            <div class="steam-game-art">
+              <img src="${game.image}" alt="${game.name}" loading="lazy">
+            </div>
+            <div class="steam-game-info">
+              <h3>${game.name}</h3>
+              <p>${Math.round(Number(game.hours) * 10) / 10} год за 2 тижні</p>
+            </div>
+          </article>
+        `).join('');
+      })
+      .catch(() => {
+        steamGames.innerHTML = '<p class="steam-status">Статистика з’явиться після підключення Steam API.</p>';
+      });
+  }
+
   const loader = document.querySelector('.site-loader');
   const loadingElements = document.querySelectorAll([
     '.site-page .hero-avatar-wrap > *',

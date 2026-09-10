@@ -34,7 +34,7 @@ jobs:
             endpoint.searchParams.set('key', process.env.STEAM_API_KEY);
             endpoint.searchParams.set('steamid', process.env.STEAM_ID);
             endpoint.searchParams.set('format', 'json');
-            endpoint.searchParams.set('count', '3');
+            endpoint.searchParams.set('count', '10');
 
             const response = await fetch(endpoint);
             if (!response.ok) throw new Error(`Steam API returned ${response.status}`);

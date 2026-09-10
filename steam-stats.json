@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-10T18:58:39.875Z",
+  "updatedAt": "2026-09-10T19:01:57.928Z",
   "games": [
     {
       "name": "Factorio",
@@ -10,6 +10,11 @@
       "name": "Portal 2",
       "hours": 1.5,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/620/capsule_231x87.jpg"
+    },
+    {
+      "name": "SteamVR",
+      "hours": 1.1,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
     }
   ]
 }

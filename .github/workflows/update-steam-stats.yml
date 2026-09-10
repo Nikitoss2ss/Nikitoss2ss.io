@@ -1,0 +1,67 @@
+name: Update Steam stats
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  STEAM_ID: "76561199558165858"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out site
+        uses: actions/checkout@v4
+
+      - name: Fetch recently played games
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: |
+          node <<'NODE'
+          (async () => {
+            const fs = require('fs');
+
+            if (!process.env.STEAM_API_KEY) {
+              throw new Error('Missing STEAM_API_KEY secret');
+            }
+
+            const endpoint = new URL('https://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/');
+            endpoint.searchParams.set('key', process.env.STEAM_API_KEY);
+            endpoint.searchParams.set('steamid', process.env.STEAM_ID);
+            endpoint.searchParams.set('format', 'json');
+            endpoint.searchParams.set('count', '3');
+
+            const response = await fetch(endpoint);
+            if (!response.ok) throw new Error(`Steam API returned ${response.status}`);
+            const payload = await response.json();
+            const games = (payload.response.games || [])
+              .sort((a, b) => (b.playtime_2weeks || 0) - (a.playtime_2weeks || 0))
+              .slice(0, 3)
+              .map(game => ({
+                name: game.name,
+                hours: Math.round((game.playtime_2weeks / 60) * 10) / 10,
+                image: `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appid}/capsule_231x87.jpg`
+              }));
+
+            fs.writeFileSync('steam-stats.json', JSON.stringify({
+              updatedAt: new Date().toISOString(),
+              games
+            }, null, 2) + '\n');
+          })().catch(error => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
+
+      - name: Publish updated stats
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add steam-stats.json
+          git diff --cached --quiet || git commit -m "Update Steam stats"
+          git push

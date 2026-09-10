@@ -1,15 +1,10 @@
 {
-  "updatedAt": "2026-09-10T18:40:51.302Z",
+  "updatedAt": "2026-09-10T18:58:39.875Z",
   "games": [
     {
       "name": "Factorio",
       "hours": 11.6,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
-    },
-    {
-      "name": "FarmD",
-      "hours": 1.9,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/1814630/capsule_231x87.jpg"
     },
     {
       "name": "Portal 2",

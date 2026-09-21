@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-21T10:39:40.111Z",
+  "updatedAt": "2026-09-21T17:00:53.428Z",
   "games": [
     {
       "name": "Drag'n Wash",
@@ -12,9 +12,9 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
-      "name": "SteamVR",
-      "hours": 1.4,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
+      "name": "Rock of Ages 2",
+      "hours": 0.5,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/434460/capsule_231x87.jpg"
     }
   ]
 }

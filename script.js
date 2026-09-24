@@ -3,9 +3,16 @@
 
 document.addEventListener('DOMContentLoaded',()=>{
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  const initialScrollBehavior = document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior = 'auto';
   window.scrollTo(0, 0);
-  document.documentElement.style.overflowY = 'hidden';
-  document.body.style.overflowY = 'hidden';
+  document.documentElement.style.scrollBehavior = initialScrollBehavior;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!isIOS) {
+    document.documentElement.style.overflowY = 'hidden';
+    document.body.style.overflowY = 'hidden';
+  }
 
   const steamGames = document.querySelector('#steam-games');
   if (steamGames) {
@@ -33,7 +40,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         `).join('');
       })
       .catch(() => {
-        steamGames.innerHTML = '<p class="steam-status">Статистика з’явиться після підключення Steam API.</p>';
+        steamGames.innerHTML = '<p class="steam-status">Не вдалося завантажити статистику Steam.</p>';
       });
   }
 
@@ -73,29 +80,39 @@ document.addEventListener('DOMContentLoaded',()=>{
     ? Promise.resolve()
     : new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
   const timeout = new Promise(resolve => window.setTimeout(resolve, 4500));
+  let loaderFinished = false;
 
   Promise.race([Promise.all([avatarReady, pageReady]), timeout]).then(() => {
+    if (loaderFinished) return;
+    loaderFinished = true;
     const remaining = Math.max(0, 3300 - (performance.now() - loaderStartedAt));
     window.setTimeout(() => {
       document.body.classList.remove('is-loading');
       document.documentElement.style.overflowY = '';
       document.body.style.overflowY = '';
+      const loaderScrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = 'auto';
       window.scrollTo(0, 0);
+      document.documentElement.style.scrollBehavior = loaderScrollBehavior;
       loader?.setAttribute('aria-hidden', 'true');
-      requestFocusUpdate?.();
     }, remaining);
   });
 
   // Give each background shape its own subtle pointer parallax.
   const supportsPointerMotion = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const abstractShapes = document.querySelectorAll('#bg-abstract .shape');
   if (supportsPointerMotion) {
     let pointerFrame = 0;
     document.addEventListener('pointermove', (event) => {
       if (pointerFrame) return;
       pointerFrame = window.requestAnimationFrame(() => {
+        if (document.body.classList.contains('performance-lite')) {
+          pointerFrame = 0;
+          return;
+        }
         const normalizedX = event.clientX / window.innerWidth - 0.5;
         const normalizedY = event.clientY / window.innerHeight - 0.5;
-        document.querySelectorAll('#bg-abstract .shape').forEach((shape, index) => {
+        abstractShapes.forEach((shape, index) => {
           const depth = 0.35 + (index % 4) * 0.12;
           shape.style.setProperty('--shape-shift-x', `${(normalizedX * 28 * depth).toFixed(2)}px`);
           shape.style.setProperty('--shape-shift-y', `${(normalizedY * 20 * depth).toFixed(2)}px`);
@@ -119,14 +136,70 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const backToTop = document.querySelector('.back-to-top');
   if (backToTop) {
+    let flightFrame = 0;
+    let restoreScrollBehavior = '';
+
     const updateBackToTop = () => {
       backToTop.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.7);
     };
 
+    const cancelFlight = () => {
+      if (!backToTop.classList.contains('is-launching')) return;
+      window.cancelAnimationFrame(flightFrame);
+      backToTop.classList.remove('is-launching');
+      backToTop.style.removeProperty('--flight-y');
+      backToTop.style.removeProperty('--flight-scale');
+      backToTop.style.removeProperty('--flight-rotate');
+      document.documentElement.style.scrollBehavior = restoreScrollBehavior;
+      updateBackToTop();
+    };
+
     window.addEventListener('scroll', updateBackToTop, { passive: true });
+    window.addEventListener('wheel', cancelFlight, { passive: true });
+    window.addEventListener('touchstart', cancelFlight, { passive: true });
     updateBackToTop();
     backToTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (backToTop.classList.contains('is-launching')) return;
+      const startingScroll = window.scrollY;
+      if (startingScroll <= 0) return;
+
+      backToTop.classList.add('is-launching');
+      backToTop.classList.remove('is-visible');
+      restoreScrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = 'auto';
+      const flightStartedAt = performance.now();
+      const flightDuration = 1500;
+
+      const animateFlight = (now) => {
+        const progress = Math.min(1, (now - flightStartedAt) / flightDuration);
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        const flightDistance = window.innerHeight * 1.28;
+
+        window.scrollTo({
+          top: startingScroll * (1 - easedProgress),
+          behavior: 'auto'
+        });
+        backToTop.style.setProperty('--flight-y', `${(-flightDistance * easedProgress).toFixed(2)}px`);
+        backToTop.style.setProperty('--flight-scale', (1 - easedProgress * 0.48).toFixed(3));
+        backToTop.style.setProperty('--flight-rotate', `${(-18 * easedProgress).toFixed(2)}deg`);
+
+        if (progress < 1) {
+          flightFrame = window.requestAnimationFrame(animateFlight);
+          return;
+        }
+
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        window.setTimeout(() => {
+          backToTop.classList.remove('is-launching');
+          backToTop.style.removeProperty('--flight-y');
+          backToTop.style.removeProperty('--flight-scale');
+          backToTop.style.removeProperty('--flight-rotate');
+          document.documentElement.style.scrollBehavior = restoreScrollBehavior;
+          updateBackToTop();
+        }, 180);
+      };
+
+      flightFrame = window.requestAnimationFrame(animateFlight);
     });
   }
 
@@ -316,6 +389,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const desktopOnly = !isMobile;
+
   const scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const el = entry.target;
@@ -434,56 +508,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     musicObserver.observe(musicSection);
   }
 
-  // Keep content sharp near the viewport center and softly defocused near its edges.
-  const focusTargets = document.querySelectorAll([
-    '.site-page .hero-avatar-wrap',
-    '.site-page .hero-copy > *',
-    '.site-page main .card summary',
-    '.site-page main .card h2',
-    '.site-page main .card h3',
-    '.site-page main .card h4',
-    '.site-page main .card p',
-    '.site-page main .card li',
-    '.site-page main .card figure',
-    '.site-page main .card iframe',
-    '.site-page main .card .panel',
-    '.site-page main .card .btn',
-    '.site-page .site-footer > *'
-  ].join(','));
-
-  let focusFrame = 0;
-  const updateFocus = () => {
-    focusFrame = 0;
-    if (document.body.classList.contains('is-loading')) return;
-
-    const viewportCenter = window.innerHeight / 2;
-    focusTargets.forEach(target => {
-      if (target.closest('.hero, .site-footer')) {
-        target.classList.remove('focus-managed');
-        target.style.removeProperty('--focus-blur');
-        target.style.removeProperty('--focus-opacity');
-        return;
-      }
-
-      const rect = target.getBoundingClientRect();
-      const elementCenter = rect.top + rect.height / 2;
-      const distance = Math.abs(elementCenter - viewportCenter) / window.innerHeight;
-      const rawProgress = Math.min(1, Math.max(0, (distance - 0.34) / 0.24));
-      const smoothProgress = rawProgress * rawProgress * (3 - 2 * rawProgress);
-      target.classList.add('focus-managed');
-      target.style.setProperty('--focus-blur', `${(smoothProgress * 3.2).toFixed(2)}px`);
-      target.style.setProperty('--focus-opacity', (1 - smoothProgress * 0.2).toFixed(3));
-    });
-  };
-
-  const requestFocusUpdate = () => {
-    if (!focusFrame) focusFrame = window.requestAnimationFrame(updateFocus);
-  };
-
-  window.addEventListener('scroll', requestFocusUpdate, { passive: true });
-  window.addEventListener('resize', requestFocusUpdate, { passive: true });
-  window.setTimeout(requestFocusUpdate, 100);
-
   // Switch to a lighter visual mode when the device cannot keep a stable frame rate.
   (function setupPerformanceMode(){
     const body = document.body;
@@ -497,6 +521,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     let lowFpsSeconds = 0;
     let stableFpsSeconds = 0;
     let lightweight = reduceMotion;
+    let performanceFrame = 0;
 
     if (lightweight) body.classList.add('performance-lite');
 
@@ -511,6 +536,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
 
     function measure(now){
+      if (document.hidden) {
+        performanceFrame = 0;
+        frames = 0;
+        lastSample = now;
+        return;
+      }
+
       frames += 1;
       const elapsed = now - lastSample;
 
@@ -537,10 +569,18 @@ document.addEventListener('DOMContentLoaded',()=>{
         }
       }
 
-      window.requestAnimationFrame(measure);
+      performanceFrame = window.requestAnimationFrame(measure);
     }
 
-    window.requestAnimationFrame(measure);
+    const resumeMeasurement = () => {
+      if (!document.hidden && !performanceFrame) {
+        lastSample = performance.now();
+        performanceFrame = window.requestAnimationFrame(measure);
+      }
+    };
+
+    document.addEventListener('visibilitychange', resumeMeasurement, { passive: true });
+    performanceFrame = window.requestAnimationFrame(measure);
   })();
 
   // Додаємо функціонал для збільшення картинок

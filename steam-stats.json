@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-26T17:07:32.838Z",
+  "updatedAt": "2026-09-26T19:49:05.113Z",
   "games": [
     {
       "name": "Drag'n Wash",
@@ -8,7 +8,7 @@
     },
     {
       "name": "Factorio",
-      "hours": 3.8,
+      "hours": 2.4,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {

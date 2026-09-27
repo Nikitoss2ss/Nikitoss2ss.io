@@ -1,20 +1,20 @@
 {
-  "updatedAt": "2026-09-27T13:54:51.267Z",
+  "updatedAt": "2026-09-27T18:20:39.612Z",
   "games": [
     {
-      "name": "Drag'n Wash",
-      "hours": 1.2,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4739660/capsule_231x87.jpg"
-    },
-    {
       "name": "Factorio",
-      "hours": 1.2,
+      "hours": 5.7,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
       "name": "SteamVR",
       "hours": 0.8,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
+    },
+    {
+      "name": "Beat Saber",
+      "hours": 0.6,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/620980/capsule_231x87.jpg"
     }
   ]
 }

@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-09-29T08:25:16.099Z",
+  "updatedAt": "2026-09-29T15:46:44.755Z",
   "games": [
     {
       "name": "Factorio",
-      "hours": 11.7,
+      "hours": 13.4,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
       "name": "SteamVR",
-      "hours": 0.8,
+      "hours": 0.6,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
     },
     {

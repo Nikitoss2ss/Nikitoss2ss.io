@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-09-30T13:39:03.403Z",
+  "updatedAt": "2026-09-30T19:16:00.182Z",
   "games": [
     {
       "name": "Factorio",
-      "hours": 17,
+      "hours": 17.5,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {

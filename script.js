@@ -26,18 +26,60 @@ document.addEventListener('DOMContentLoaded',()=>{
         if (!games.length) {
           throw new Error('No recently played games');
         }
-        steamGames.innerHTML = games.map((game, index) => `
-          <article class="steam-game">
-            <span class="steam-game-rank">${index + 1}</span>
-            <div class="steam-game-art">
-              <img src="${game.image}" alt="${game.name}" loading="lazy">
-            </div>
-            <div class="steam-game-info">
-              <h3>${game.name}</h3>
-              <p>${Math.round(Number(game.hours) * 10) / 10} год за 2 тижні</p>
-            </div>
-          </article>
-        `).join('');
+        steamGames.replaceChildren(...games.map((game, index) => {
+          const article = document.createElement('article');
+          article.className = 'steam-game';
+
+          const rank = document.createElement('span');
+          rank.className = 'steam-game-rank';
+          rank.textContent = index + 1;
+
+          const art = document.createElement('div');
+          art.className = 'steam-game-art';
+
+          const image = document.createElement('img');
+          image.src = game.image;
+          image.alt = game.name;
+          image.loading = 'lazy';
+          const imageBase = typeof game.image === 'string'
+            ? game.image.match(/^https:\/\/cdn\.cloudflare\.steamstatic\.com\/steam\/apps\/\d+\//)?.[0]
+            : null;
+          const alternateImageNames = [
+            'header.jpg',
+            'capsule_467x181.jpg',
+            'capsule_616x353.jpg',
+            'library_hero.jpg',
+            'library_600x900.jpg'
+          ];
+          let alternateImageIndex = 0;
+          image.addEventListener('error', () => {
+            if (imageBase && alternateImageIndex < alternateImageNames.length) {
+              image.src = `${imageBase}${alternateImageNames[alternateImageIndex]}`;
+              alternateImageIndex += 1;
+              return;
+            }
+            art.classList.add('has-fallback');
+          });
+
+          const fallback = document.createElement('span');
+          fallback.className = 'steam-game-art-fallback';
+          fallback.textContent = game.name;
+          fallback.setAttribute('aria-hidden', 'true');
+          art.append(image, fallback);
+
+          const info = document.createElement('div');
+          info.className = 'steam-game-info';
+
+          const name = document.createElement('h3');
+          name.textContent = game.name;
+
+          const hours = document.createElement('p');
+          hours.textContent = `${Math.round(Number(game.hours) * 10) / 10} год за 2 тижні`;
+          info.append(name, hours);
+
+          article.append(rank, art, info);
+          return article;
+        }));
       })
       .catch(() => {
         steamGames.innerHTML = '<p class="steam-status">Не вдалося завантажити статистику Steam.</p>';
@@ -674,4 +716,3 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   })();
 });
-

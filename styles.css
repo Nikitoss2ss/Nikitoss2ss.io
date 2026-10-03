@@ -706,49 +706,16 @@ button, a {
   pointer-events: none;
 }
 
-.back-to-top.is-launching .arrow-line {
-  animation: none;
-}
-
-.back-to-top.is-launching .arrow-tip {
-  animation: none;
-}
-
-.back-to-top .arrow-line {
-  width: 2px;
-  height: 14px;
-  background: var(--accent);
-  display: block;
-  border-radius: 999px;
-  transform: translateY(4px);
-  animation: backTopArrow 1.4s ease-in-out infinite;
-}
-
-.back-to-top .arrow-tip {
-  width: 10px;
-  height: 10px;
-  border-left: 2px solid var(--accent);
-  border-top: 2px solid var(--accent);
-  transform: rotate(45deg);
-  position: absolute;
-  top: 15px;
-  left: calc(50% - 5px);
-  animation: backTopTip 1.4s ease-in-out infinite;
+.back-to-top img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(255, 155, 66, 0.38));
 }
 
 @keyframes backTopBounce {
   0%, 100% { transform: translateX(0) translateY(0) scale(1); }
   50% { transform: translateX(0) translateY(-7px) scale(1.03); }
-}
-
-@keyframes backTopArrow {
-  0%, 100% { transform: translateY(4px); }
-  50% { transform: translateY(0); }
-}
-
-@keyframes backTopTip {
-  0%, 100% { transform: translateY(0) rotate(45deg); opacity: 0.95; }
-  50% { transform: translateY(-5px) rotate(45deg); opacity: 0.62; }
 }
 
 @keyframes copyFadeIn {
@@ -1209,7 +1176,7 @@ ul {
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.24);
 }
 
-.chars:hover > figure:not(:hover) {
+.chars:has(> figure:hover) > figure:not(:hover) {
   transform: translateY(16px) scale(0.94);
   filter: blur(3px);
   opacity: 0.62;
@@ -1900,6 +1867,29 @@ ul {
   height: 100%;
   object-fit: cover;
   transition: transform 450ms ease, filter 450ms ease;
+}
+
+.steam-game-art-fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding: 12px;
+  color: rgba(255, 230, 220, 0.92);
+  font-size: clamp(0.8rem, 2vw, 1.05rem);
+  font-weight: 800;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(255, 142, 122, 0.28), transparent 48%),
+    linear-gradient(135deg, rgba(72, 20, 24, 0.96), rgba(20, 12, 18, 0.98));
+}
+
+.steam-game-art.has-fallback img {
+  display: none;
+}
+
+.steam-game-art.has-fallback .steam-game-art-fallback {
+  display: grid;
 }
 
 .steam-game:hover .steam-game-art img {
@@ -3517,7 +3507,7 @@ body.is-loading .site-page .site-footer > * {
     transform: translateX(135%);
   }
 
-  .chars:hover > figure:not(:hover) {
+  .chars:has(> figure:hover) > figure:not(:hover) {
     transform: translateY(10px) scale(0.95) !important;
     filter: blur(1.5px) saturate(0.72) !important;
     opacity: 0.68;
@@ -3534,3 +3524,197 @@ body.is-loading .site-page .site-footer > * {
   }
 }
 
+:root {
+  --bg: #100b17;
+  --bg-soft: rgba(20, 13, 29, 0.96);
+  --panel: rgba(255, 255, 255, 0.055);
+  --panel-strong: rgba(255, 255, 255, 0.09);
+  --border: rgba(255, 178, 92, 0.18);
+  --surface: rgba(255, 255, 255, 0.045);
+  --text: #fff2df;
+  --muted: #d8bddc;
+  --accent: #ff9b42;
+  --accent-2: #b98aff;
+  --shadow: 0 32px 120px rgba(5, 2, 12, 0.42);
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 16% 8%, rgba(255, 112, 35, 0.18), transparent 27%),
+    radial-gradient(ellipse at 86% 21%, rgba(133, 78, 194, 0.2), transparent 30%),
+    radial-gradient(ellipse at 48% 105%, rgba(99, 45, 130, 0.2), transparent 46%),
+    linear-gradient(135deg, #08060d 0%, #19101f 50%, #09070f 100%);
+}
+
+body::before {
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255, 132, 48, 0.09), transparent 25%),
+    radial-gradient(circle at 78% 25%, rgba(164, 104, 220, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(8, 5, 13, 0.62), rgba(7, 5, 12, 0.86));
+}
+
+.site-loader {
+  background:
+    radial-gradient(circle at 50% 46%, rgba(255, 126, 45, 0.18), transparent 28%),
+    radial-gradient(circle at 52% 54%, rgba(143, 82, 198, 0.15), transparent 42%),
+    rgba(6, 4, 10, 0.55);
+}
+
+#bg-abstract::before {
+  background:
+    radial-gradient(circle at 20% 25%, rgba(255, 132, 48, 0.15), transparent 18%),
+    radial-gradient(circle at 80% 18%, rgba(172, 112, 225, 0.13), transparent 16%);
+}
+
+#bg-abstract::after {
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.025) 0%, transparent 18%, transparent 82%, rgba(255, 255, 255, 0.025) 100%),
+    repeating-linear-gradient(90deg, transparent 0 88px, rgba(255, 157, 66, 0.025) 89px, transparent 90px),
+    repeating-linear-gradient(0deg, transparent 0 88px, rgba(177, 125, 224, 0.025) 89px, transparent 90px);
+}
+
+#bg-abstract .shape:nth-child(3n + 1) {
+  background: rgba(255, 137, 49, 0.34);
+}
+
+#bg-abstract .shape:nth-child(3n + 2) {
+  background: rgba(145, 93, 194, 0.3);
+}
+
+#bg-abstract .shape:nth-child(3n) {
+  background: rgba(201, 91, 49, 0.27);
+}
+
+.intro-fullscreen::before {
+  display: block;
+  inset: 0;
+  background:
+    radial-gradient(circle at 84% 22%, rgba(255, 168, 81, 0.16), transparent 4%),
+    radial-gradient(circle at 84% 22%, transparent 0 8%, rgba(255, 189, 111, 0.11) 8.1% 8.25%, transparent 8.4% 10%, rgba(255, 189, 111, 0.08) 10.1% 10.25%, transparent 10.4%);
+  opacity: 0.9;
+}
+
+.eyebrow {
+  color: #ffb45f;
+}
+
+.avatar-ring {
+  box-shadow: 0 0 0 12px rgba(255, 153, 66, 0.09), 0 0 0 26px rgba(177, 125, 224, 0.075);
+}
+
+.hero-avatar-wrap::before {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.16), transparent 22%),
+    radial-gradient(circle at 80% 80%, rgba(255, 148, 61, 0.14), transparent 20%);
+}
+
+.hero-avatar-wrap::after {
+  background: rgba(255, 143, 56, 0.15);
+  box-shadow: 0 0 44px rgba(255, 143, 56, 0.2);
+}
+
+.hero-badge {
+  background: rgba(35, 22, 39, 0.88);
+  border-color: rgba(255, 178, 92, 0.28);
+  color: #fff2df;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff9b42, #ffd078);
+  color: #241426;
+  box-shadow: 0 24px 50px rgba(255, 136, 49, 0.2);
+}
+
+.btn:hover,
+.btn:focus-visible,
+.hero-actions .btn:hover,
+.hero-actions .btn:focus-visible {
+  box-shadow: 0 22px 48px rgba(255, 145, 58, 0.24);
+}
+
+.card {
+  border-color: rgba(255, 178, 92, 0.13);
+  box-shadow: 0 28px 80px rgba(5, 2, 12, 0.3), 0 4px 24px rgba(119, 73, 163, 0.06);
+}
+
+.card:hover {
+  border-color: rgba(255, 178, 92, 0.32);
+}
+
+.card::before,
+.panel::before,
+.track-card::before,
+.player-card::before {
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.1), transparent 18%, transparent 66%, rgba(255, 157, 66, 0.055)),
+    radial-gradient(80% 60% at 50% 0%, rgba(188, 142, 231, 0.055), transparent 72%);
+}
+
+.chars figure:hover {
+  border-color: rgba(255, 166, 77, 0.58);
+  box-shadow: 0 30px 76px rgba(0, 0, 0, 0.38), 0 0 34px rgba(255, 145, 58, 0.17);
+}
+
+.steam-game:first-child {
+  background:
+    linear-gradient(155deg, rgba(255, 143, 56, 0.17), rgba(30, 17, 39, 0.3) 58%),
+    rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 178, 92, 0.34);
+}
+
+.steam-game:first-child::after {
+  color: rgba(255, 216, 174, 0.84);
+}
+
+.site-footer {
+  color: #d8bddc;
+}
+
+.halloween-floaters {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.halloween-floater {
+  position: absolute;
+  display: block;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  line-height: 1;
+  opacity: 0.48;
+  filter: drop-shadow(0 0 12px rgba(255, 154, 66, 0.32));
+  animation: halloweenFloat 16s ease-in-out infinite alternate;
+}
+
+.floater-pumpkin { top: 24%; left: 7%; animation-delay: -3s; }
+.floater-bat { top: 42%; right: 8%; animation-duration: 13s; animation-delay: -8s; }
+.floater-ghost { top: 68%; left: 12%; animation-duration: 19s; animation-delay: -11s; }
+.floater-skull { top: 79%; right: 11%; animation-duration: 17s; animation-delay: -5s; }
+.floater-pumpkin-small { top: 13%; right: 31%; font-size: 1.35rem; animation-duration: 21s; animation-delay: -14s; }
+.floater-bat-small { top: 58%; left: 46%; font-size: 1.4rem; animation-duration: 14s; animation-delay: -2s; }
+
+@keyframes halloweenFloat {
+  0% { transform: translate3d(-8px, 10px, 0) rotate(-12deg); }
+  50% { transform: translate3d(16px, -18px, 0) rotate(10deg); }
+  100% { transform: translate3d(-12px, -32px, 0) rotate(-6deg); }
+}
+
+@media (max-width: 600px) {
+  .halloween-floater {
+    font-size: 1.5rem;
+    opacity: 0.34;
+  }
+
+  .floater-pumpkin-small,
+  .floater-bat-small {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halloween-floater {
+    animation: none;
+  }
+}

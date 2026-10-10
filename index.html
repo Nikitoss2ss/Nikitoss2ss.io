@@ -2,54 +2,79 @@
 <!doctype html>
 <html lang="uk">
 
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Назва та опис сайту -->
-  <title>Nikitoss2ss — Official Website</title>
+  <!-- SEO -->
+  <title>Nikitoss2ss — Official Website | Kuron</title>
   <meta
     name="description"
-    content="Nikitoss2ss, also known as Kuron — developer, creator and animator. Explore projects, gaming and more."
+    content="Nikitoss2ss is a Ukrainian digital creator behind Kuron. Explore programming projects, gaming, 3D art, animation, furry characters, videos and original merchandise."
   />
+  <meta name="author" content="Nikitoss2ss" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#171717" />
 
-  <!-- Основний домен -->
+  <!-- Canonical -->
   <link rel="canonical" href="https://nikitoss2ss.pp.ua/" />
 
-  <!-- Підтвердження Google Search Console -->
+  <!-- Google Search Console -->
   <meta
     name="google-site-verification"
     content="whYUgrbWItKIwehRiv1MBgWehw_UVs2-doFV0zlFjZI"
   />
 
-  <!-- Попередній перегляд посилань -->
+  <!-- Favicon -->
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="any"
+    href="/Images/avatar.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="/Images/avatar.png"
+  />
+
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Nikitoss2ss" />
-  <meta property="og:title" content="Nikitoss2ss — Official Website" />
+  <meta
+    property="og:title"
+    content="Nikitoss2ss — Official Website | Kuron"
+  />
   <meta
     property="og:description"
-    content="The official website of Nikitoss2ss (Kuron) — developer, creator and animator."
+    content="Meet Nikitoss2ss and discover Kuron, his original character. Explore programming, gaming, 3D art, animation, furry creativity and original merchandise."
   />
   <meta property="og:url" content="https://nikitoss2ss.pp.ua/" />
   <meta
     property="og:image"
     content="https://nikitoss2ss.pp.ua/Images/avatar.png"
   />
-  <meta property="og:image:alt" content="Nikitoss2ss avatar" />
+  <meta property="og:image:alt" content="Nikitoss2ss avatar and creator identity" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:locale" content="en_US" />
 
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Nikitoss2ss — Official Website" />
+  <!-- X / Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta
+    name="twitter:title"
+    content="Nikitoss2ss — Official Website | Kuron"
+  />
   <meta
     name="twitter:description"
-    content="The official website of Nikitoss2ss (Kuron) — developer, creator and animator."
+    content="The official website of Nikitoss2ss. Discover Kuron, creative projects, gaming, 3D art, animation and original merchandise."
   />
   <meta
     name="twitter:image"
     content="https://nikitoss2ss.pp.ua/Images/avatar.png"
   />
+  <meta name="twitter:image:alt" content="Nikitoss2ss avatar" />
 
-  <!-- Структуровані дані -->
+  <!-- Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -63,7 +88,15 @@
           "Nikitoss2ss Official Website",
           "Kuron"
         ],
-        "inLanguage": "en"
+        "description": "The official website of Nikitoss2ss, featuring his creative projects, gaming, programming, 3D art, animation, furry characters and merchandise.",
+        "inLanguage": "en",
+        "publisher": {
+          "@id": "https://nikitoss2ss.pp.ua/#person"
+        },
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "https://nikitoss2ss.pp.ua/Images/avatar.png"
+        }
       },
       {
         "@type": "Person",
@@ -71,8 +104,18 @@
         "name": "Nikitoss2ss",
         "alternateName": "Kuron",
         "url": "https://nikitoss2ss.pp.ua/",
-        "description": "Developer, creator and animator.",
         "image": "https://nikitoss2ss.pp.ua/Images/avatar.png",
+        "description": "Nikitoss2ss is a Ukrainian digital creator interested in programming, technology, gaming, 3D modeling and animation. Kuron is his original character associated with his creative identity. His website features projects, online profiles and original merchandise.",
+        "knowsAbout": [
+          "Programming",
+          "Software development",
+          "Computer technology",
+          "3D modeling",
+          "Animation",
+          "Video games",
+          "Furry art",
+          "Digital content creation"
+        ],
         "sameAs": [
           "https://www.youtube.com/@Nikitoss2ss",
           "https://www.tiktok.com/@nikitoss2ss",
@@ -85,11 +128,20 @@
   }
   </script>
 
-  <!-- Стилі, скрипти та іконка -->
-  <link rel="stylesheet" href="styles.css?v=1.10_halloween_edition" />
-  <script src="script.js" defer></script>
-  <link rel="icon" href="Icons/Card.png" />
-  <link rel="preload" as="image" href="Images/avatar.png" fetchpriority="high" />
+  <!-- Styles and scripts -->
+  <link
+    rel="stylesheet"
+    href="/styles.css?v=1.10_halloween_edition"
+  />
+  <script src="/script.js" defer></script>
+
+  <!-- Preload avatar -->
+  <link
+    rel="preload"
+    as="image"
+    href="/Images/avatar.png"
+    fetchpriority="high"
+  />
 </head>
 <body class="is-loading">
   <div class="site-loader" role="status" aria-label="Завантаження сторінки">

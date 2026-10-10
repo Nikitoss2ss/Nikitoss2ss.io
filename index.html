@@ -1,36 +1,95 @@
 <!-- FILE: index.html -->
 <!doctype html>
 <html lang="uk">
+
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nikitoss2ss / Kuron - Official Website</title>
-  <meta name="description" content="Nikitoss2ss, also known as Kuron — developer, creator and animator." />
-  <meta name="google-site-verification" content="whYUgrbWItKIwehRiv1MBgWehw_UVs2-doFV0zlFjZI" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Назва та опис сайту -->
+  <title>Nikitoss2ss — Official Website</title>
+  <meta
+    name="description"
+    content="Nikitoss2ss, also known as Kuron — developer, creator and animator. Explore projects, gaming and more."
+  />
+
+  <!-- Основний домен -->
+  <link rel="canonical" href="https://nikitoss2ss.pp.ua/" />
+
+  <!-- Підтвердження Google Search Console -->
+  <meta
+    name="google-site-verification"
+    content="whYUgrbWItKIwehRiv1MBgWehw_UVs2-doFV0zlFjZI"
+  />
+
+  <!-- Попередній перегляд посилань -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Nikitoss2ss" />
+  <meta property="og:title" content="Nikitoss2ss — Official Website" />
+  <meta
+    property="og:description"
+    content="The official website of Nikitoss2ss (Kuron) — developer, creator and animator."
+  />
+  <meta property="og:url" content="https://nikitoss2ss.pp.ua/" />
+  <meta
+    property="og:image"
+    content="https://nikitoss2ss.pp.ua/Images/avatar.png"
+  />
+  <meta property="og:image:alt" content="Nikitoss2ss avatar" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Nikitoss2ss — Official Website" />
+  <meta
+    name="twitter:description"
+    content="The official website of Nikitoss2ss (Kuron) — developer, creator and animator."
+  />
+  <meta
+    name="twitter:image"
+    content="https://nikitoss2ss.pp.ua/Images/avatar.png"
+  />
+
+  <!-- Структуровані дані -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ProfilePage",
-    "mainEntity": {
-      "@type": "Person",
-      "name": "Nikitoss2ss",
-      "alternateName": "Kuron",
-      "description": "Developer, creator and animator",
-      "url": "https://nikitoss2ss.github.io/",
-      "sameAs": [
-        "https://www.youtube.com/@Nikitoss2ss",
-        "https://www.tiktok.com/@nikitoss2ss",
-        "https://www.xbox.com/en-US/play/user/Nikitoss2ss",
-        "https://steamcommunity.com/profiles/76561199558165858",
-        "https://x.com/Nikitoss2ss1"
-      ]
-    }
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://nikitoss2ss.pp.ua/#website",
+        "url": "https://nikitoss2ss.pp.ua/",
+        "name": "Nikitoss2ss",
+        "alternateName": [
+          "Nikitoss2ss Official Website",
+          "Kuron"
+        ],
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://nikitoss2ss.pp.ua/#person",
+        "name": "Nikitoss2ss",
+        "alternateName": "Kuron",
+        "url": "https://nikitoss2ss.pp.ua/",
+        "description": "Developer, creator and animator.",
+        "image": "https://nikitoss2ss.pp.ua/Images/avatar.png",
+        "sameAs": [
+          "https://www.youtube.com/@Nikitoss2ss",
+          "https://www.tiktok.com/@nikitoss2ss",
+          "https://www.xbox.com/en-US/play/user/Nikitoss2ss",
+          "https://steamcommunity.com/profiles/76561199558165858",
+          "https://x.com/Nikitoss2ss1"
+        ]
+      }
+    ]
   }
   </script>
+
+  <!-- Стилі, скрипти та іконка -->
   <link rel="stylesheet" href="styles.css?v=1.10_halloween_edition" />
   <script src="script.js" defer></script>
-  <link rel="icon" href="Icons/Card.png">
-  <link rel="preload" as="image" href="Images/avatar.png" fetchpriority="high">
+  <link rel="icon" href="Icons/Card.png" />
+  <link rel="preload" as="image" href="Images/avatar.png" fetchpriority="high" />
 </head>
 <body class="is-loading">
   <div class="site-loader" role="status" aria-label="Завантаження сторінки">

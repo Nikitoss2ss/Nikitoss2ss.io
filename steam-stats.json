@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-21T17:07:22.259Z",
+  "updatedAt": "2026-10-21T20:36:06.556Z",
   "games": [
     {
       "name": "Portal 2",
@@ -12,9 +12,9 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
-      "name": "VRChat",
-      "hours": 1.6,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/438100/capsule_231x87.jpg"
+      "name": "Teach my little sister how to drive Demo",
+      "hours": 1.5,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/3950270/capsule_231x87.jpg"
     }
   ]
 }

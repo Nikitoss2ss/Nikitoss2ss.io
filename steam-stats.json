@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-22T10:07:21.792Z",
+  "updatedAt": "2026-10-22T15:13:41.718Z",
   "games": [
     {
       "name": "Portal 2",
@@ -12,9 +12,9 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/3950270/capsule_231x87.jpg"
     },
     {
-      "name": "Factorio",
-      "hours": 0.9,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
+      "name": "Drag'n Wash",
+      "hours": 0.2,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4739660/capsule_231x87.jpg"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-22T04:37:12.431Z",
+  "updatedAt": "2026-10-22T10:07:21.792Z",
   "games": [
     {
       "name": "Portal 2",
@@ -7,14 +7,14 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/620/capsule_231x87.jpg"
     },
     {
-      "name": "Factorio",
-      "hours": 2.8,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
-    },
-    {
       "name": "Teach my little sister how to drive Demo",
       "hours": 1.5,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/3950270/capsule_231x87.jpg"
+    },
+    {
+      "name": "Factorio",
+      "hours": 0.9,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     }
   ]
 }

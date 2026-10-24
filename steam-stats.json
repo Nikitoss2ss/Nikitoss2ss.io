@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T20:43:32.994Z",
+  "updatedAt": "2026-10-24T23:09:00.658Z",
   "games": [
     {
       "name": "Portal 2",
@@ -8,7 +8,7 @@
     },
     {
       "name": "Factorio",
-      "hours": 2.1,
+      "hours": 4.4,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {

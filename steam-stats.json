@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T18:05:30.060Z",
+  "updatedAt": "2026-10-24T20:43:32.994Z",
   "games": [
     {
       "name": "Portal 2",
@@ -7,14 +7,14 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/620/capsule_231x87.jpg"
     },
     {
+      "name": "Factorio",
+      "hours": 2.1,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
+    },
+    {
       "name": "Teach my little sister how to drive Demo",
       "hours": 1.5,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/3950270/capsule_231x87.jpg"
-    },
-    {
-      "name": "Drag'n Wash",
-      "hours": 0.2,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4739660/capsule_231x87.jpg"
     }
   ]
 }

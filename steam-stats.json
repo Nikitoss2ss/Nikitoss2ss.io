@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-04T17:57:58.711Z",
+  "updatedAt": "2026-11-04T23:37:06.814Z",
   "games": [
     {
       "name": "Factorio",
@@ -13,7 +13,7 @@
     },
     {
       "name": "Wallpaper Engine",
-      "hours": 0.6,
+      "hours": 0.5,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
     }
   ]

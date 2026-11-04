@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-04T09:17:32.445Z",
+  "updatedAt": "2026-11-04T17:57:58.711Z",
   "games": [
     {
       "name": "Factorio",
@@ -7,14 +7,14 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
-      "name": "Teach my little sister how to drive Demo",
-      "hours": 1.1,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/3950270/capsule_231x87.jpg"
-    },
-    {
       "name": "SteamVR",
       "hours": 0.6,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
+    },
+    {
+      "name": "Wallpaper Engine",
+      "hours": 0.6,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
     }
   ]
 }

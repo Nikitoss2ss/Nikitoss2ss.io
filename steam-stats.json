@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-06T17:56:08.333Z",
+  "updatedAt": "2026-11-06T23:04:24.987Z",
   "games": [
     {
       "name": "Factorio",
@@ -12,9 +12,9 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
     },
     {
-      "name": "SteamVR",
-      "hours": 0.6,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
+      "name": "Drag'n Wash",
+      "hours": 1.3,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4739660/capsule_231x87.jpg"
     }
   ]
 }

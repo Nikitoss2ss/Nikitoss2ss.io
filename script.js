@@ -340,8 +340,18 @@ document.addEventListener('DOMContentLoaded', () => {
         steamGames.classList.toggle('has-one-game', games.length === 1);
         const maxHours = Math.max(...games.map((game) => Number(game.hours) || 0), .1);
         steamGames.replaceChildren(...games.map((game, index) => {
-          const row = document.createElement('article');
+          const row = document.createElement('a');
           row.className = 'steam-game';
+          const appIdFromImage = typeof game.image === 'string'
+            ? game.image.match(/\/steam\/apps\/(\d+)\//)?.[1]
+            : null;
+          const appId = String(game.appid ?? appIdFromImage ?? '');
+          row.href = appId
+            ? `https://store.steampowered.com/app/${encodeURIComponent(appId)}/`
+            : `https://store.steampowered.com/search/?term=${encodeURIComponent(game.name || '')}`;
+          row.target = '_blank';
+          row.rel = 'noopener noreferrer';
+          row.setAttribute('aria-label', `Відкрити ${game.name} у Steam`);
           row.style.setProperty('--card-index', String(index));
           const rank = document.createElement('span');
           rank.className = 'steam-game-rank';
@@ -350,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
           art.className = 'steam-game-art';
           const image = document.createElement('img');
           image.src = game.image;
-          image.alt = game.name;
+          image.alt = '';
           image.loading = 'lazy';
           const imageBase = typeof game.image === 'string'
             ? game.image.match(/^https:\/\/cdn\.cloudflare\.steamstatic\.com\/steam\/apps\/\d+\//)?.[0]
@@ -367,13 +377,20 @@ document.addEventListener('DOMContentLoaded', () => {
           const fallback = document.createElement('span');
           fallback.className = 'steam-game-art-fallback';
           fallback.setAttribute('aria-hidden', 'true');
-          const orbitTitle = document.createElement('span');
-          orbitTitle.className = 'steam-fallback-orbit';
-          orbitTitle.textContent = `${game.name} · ${game.name} ·`;
-          const centerTitle = document.createElement('strong');
-          centerTitle.className = 'steam-fallback-center';
-          centerTitle.textContent = game.name;
-          fallback.append(orbitTitle, centerTitle);
+          [0, 1, 2].forEach((lineIndex) => {
+            const line = document.createElement('span');
+            line.className = `steam-fallback-line line-${lineIndex + 1}`;
+            const track = document.createElement('span');
+            track.className = 'steam-fallback-track';
+            [0, 1].forEach((copyIndex) => {
+              const title = document.createElement('span');
+              title.textContent = `${game.name}  ·  ${game.name}  ·  `;
+              if (copyIndex) title.setAttribute('aria-hidden', 'true');
+              track.append(title);
+            });
+            line.append(track);
+            fallback.append(line);
+          });
           const time = document.createElement('span');
           time.className = 'steam-game-time';
           time.textContent = `${Math.round(Number(game.hours) * 10) / 10} ГОД`;
@@ -391,8 +408,11 @@ document.addEventListener('DOMContentLoaded', () => {
           const meterFill = document.createElement('span');
           meterFill.style.setProperty('--playtime-fill', `${Math.max(8, (Number(game.hours) || 0) / maxHours * 100)}%`);
           meter.append(meterFill);
-          info.append(name, hours, meter);
-          row.append(rank, art, info);
+          const openLabel = document.createElement('span');
+          openLabel.className = 'steam-game-open';
+          openLabel.textContent = 'СТОРІНКА ГРИ ↗';
+          info.append(name, hours, meter, openLabel);
+          row.append(art, info);
           return row;
         }));
       })

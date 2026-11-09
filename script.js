@@ -324,17 +324,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Current Steam stats remain live from the existing JSON file.
   const steamGames = document.querySelector('#steam-games');
   if (steamGames) {
+    const isExcludedSteamApp = (game) => {
+      const appId = String(game?.appid ?? '');
+      const title = String(game?.name ?? '').trim();
+      return appId === '250820' || appId === '431960' || /steam\s*vr|wallpaper\s*engine/i.test(title);
+    };
     fetch('steam-stats.json', { cache: 'no-store' })
       .then((response) => {
         if (!response.ok) throw new Error('Steam stats unavailable');
         return response.json();
       })
       .then((data) => {
-        const games = Array.isArray(data.games) ? data.games.slice(0, 3) : [];
+        const games = Array.isArray(data.games) ? data.games.filter((game) => !isExcludedSteamApp(game)).slice(0, 3) : [];
         if (!games.length) throw new Error('No recently played games');
+        steamGames.classList.toggle('has-one-game', games.length === 1);
+        const maxHours = Math.max(...games.map((game) => Number(game.hours) || 0), .1);
         steamGames.replaceChildren(...games.map((game, index) => {
           const row = document.createElement('article');
           row.className = 'steam-game';
+          row.style.setProperty('--card-index', String(index));
           const rank = document.createElement('span');
           rank.className = 'steam-game-rank';
           rank.textContent = String(index + 1).padStart(2, '0');
@@ -358,16 +366,32 @@ document.addEventListener('DOMContentLoaded', () => {
           });
           const fallback = document.createElement('span');
           fallback.className = 'steam-game-art-fallback';
-          fallback.textContent = game.name;
           fallback.setAttribute('aria-hidden', 'true');
-          art.append(image, fallback);
+          const orbitTitle = document.createElement('span');
+          orbitTitle.className = 'steam-fallback-orbit';
+          orbitTitle.textContent = `${game.name} · ${game.name} ·`;
+          const centerTitle = document.createElement('strong');
+          centerTitle.className = 'steam-fallback-center';
+          centerTitle.textContent = game.name;
+          fallback.append(orbitTitle, centerTitle);
+          const time = document.createElement('span');
+          time.className = 'steam-game-time';
+          time.textContent = `${Math.round(Number(game.hours) * 10) / 10} ГОД`;
+          time.setAttribute('aria-label', `${game.hours} годин за два тижні`);
+          art.append(image, fallback, rank, time);
           const info = document.createElement('div');
           info.className = 'steam-game-info';
           const name = document.createElement('h3');
           name.textContent = game.name;
           const hours = document.createElement('p');
-          hours.textContent = `${Math.round(Number(game.hours) * 10) / 10} год за 2 тижні`;
-          info.append(name, hours);
+          hours.textContent = 'ЧАС У ГРІ / ОСТАННІ 14 ДНІВ';
+          const meter = document.createElement('div');
+          meter.className = 'steam-game-meter';
+          meter.setAttribute('aria-label', `${game.hours} годин за останні два тижні`);
+          const meterFill = document.createElement('span');
+          meterFill.style.setProperty('--playtime-fill', `${Math.max(8, (Number(game.hours) || 0) / maxHours * 100)}%`);
+          meter.append(meterFill);
+          info.append(name, hours, meter);
           row.append(rank, art, info);
           return row;
         }));

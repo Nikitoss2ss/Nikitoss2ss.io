@@ -1,42 +1,345 @@
-/* FILE: script.js */
-// Basic interactions: slideshow for Machinarium section + footer year + audio metadata helper (simple)
+// Interactions for the presentation style portfolio.
+document.addEventListener('DOMContentLoaded', () => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const progressBar = document.querySelector('.scroll-progress span');
+  const scenes = [...document.querySelectorAll('main > section')];
+  const railLinks = [...document.querySelectorAll('.chapter-rail a')];
+  const gameFrames = [...document.querySelectorAll('.game-frame')];
+  const gameCurrent = document.querySelector('.game-current');
+  const siteLoader = document.querySelector('#site-loader');
+  const loaderName = document.querySelector('#loader-name');
+  const loaderFill = document.querySelector('#loader-fill');
+  const loaderPercent = document.querySelector('#loader-percent');
+  const loaderStatus = document.querySelector('#loader-status');
+  const heroArt = document.querySelector('.hero-art');
+  const heroAvatar = document.querySelector('.hero-avatar');
+  const heroAvatarVideo = document.querySelector('.hero-avatar-video');
+  const musicScene = document.querySelector('#music');
+  const musicFilm = document.querySelector('.music-film');
+  let filmRequested = false;
+  let filmVisible = false;
+  let loadingFinishStarted = false;
+  let motionFrame = 0;
 
-document.addEventListener('DOMContentLoaded',()=>{
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  const initialScrollBehavior = document.documentElement.style.scrollBehavior;
-  document.documentElement.style.scrollBehavior = 'auto';
-  window.scrollTo(0, 0);
-  document.documentElement.style.scrollBehavior = initialScrollBehavior;
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  if (!isIOS) {
-    document.documentElement.style.overflowY = 'hidden';
-    document.body.style.overflowY = 'hidden';
+  let loadingProgress = 0;
+  let targetLoadingProgress = 4;
+  let loadingAnimationFrame = 0;
+  const startedAt = performance.now();
+  const paintLoadingProgress = () => {
+    loadingAnimationFrame = 0;
+    loadingProgress += (targetLoadingProgress - loadingProgress) * .18;
+    if (Math.abs(targetLoadingProgress - loadingProgress) < .4) loadingProgress = targetLoadingProgress;
+    const percentage = `${Math.round(loadingProgress)}%`;
+    siteLoader?.style.setProperty('--loader-progress', percentage);
+    siteLoader?.style.setProperty('--loader-fraction', String(loadingProgress / 100));
+    if (loaderFill) loaderFill.style.width = percentage;
+    if (loaderPercent) loaderPercent.textContent = `${String(Math.round(loadingProgress)).padStart(2, '0')}%`;
+    if (loadingProgress !== targetLoadingProgress) loadingAnimationFrame = requestAnimationFrame(paintLoadingProgress);
+  };
+  const setLoadingStage = (progress, message) => {
+    if (progress >= targetLoadingProgress) {
+      targetLoadingProgress = progress;
+      if (loaderStatus) loaderStatus.textContent = message;
+    }
+    if (!loadingAnimationFrame) loadingAnimationFrame = requestAnimationFrame(paintLoadingProgress);
+  };
+
+  const startMusicCoverVideo = () => {
+    if (!musicScene || !musicFilm || !filmVisible || musicScene.dataset.coverKind !== 'video') return;
+    if (!filmRequested) {
+      filmRequested = true;
+      musicFilm.src = musicScene.dataset.coverSource;
+      musicFilm.load();
+    }
+    musicFilm.play().then(() => musicScene.classList.add('video-ready')).catch(() => {});
+  };
+
+  const fileExists = async (path) => {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 1900);
+    try {
+      const response = await fetch(path, { method: 'HEAD', cache: 'no-store', signal: controller.signal });
+      return response.ok ? path : null;
+    } catch {
+      return null;
+    } finally {
+      window.clearTimeout(timer);
+    }
+  };
+  const findAsset = async (base, extensions) => {
+    const choices = await Promise.all(extensions.map((extension) => fileExists(`${base}${extension}`)));
+    return choices.find(Boolean) || null;
+  };
+  const waitForImage = (image) => new Promise((resolve) => {
+    if (image.complete) { resolve(); return; }
+    image.addEventListener('load', resolve, { once: true });
+    image.addEventListener('error', resolve, { once: true });
+  });
+
+  const heroAvatarReady = (async () => {
+    const fallbackImage = heroAvatar?.dataset.fallback || 'Images/avatar.png';
+    const showStill = async () => {
+      heroArt?.classList.remove('avatar-is-video');
+      if (heroAvatar && !heroAvatar.hasAttribute('src')) {
+        heroAvatar.setAttribute('fetchpriority', 'high');
+        heroAvatar.src = fallbackImage;
+      }
+      await waitForImage(heroAvatar);
+    };
+    if (reduceMotion || !heroAvatarVideo) return showStill();
+    const avatarMovie = await findAsset('Images/avatar', ['.mp4', '.webm']);
+    if (!avatarMovie) return showStill();
+    await new Promise((resolve) => {
+      let resolved = false;
+      const finish = () => { if (!resolved) { resolved = true; resolve(); } };
+      const fallback = () => { showStill().finally(finish); };
+      const timeout = window.setTimeout(fallback, 3600);
+      heroAvatarVideo.addEventListener('loadeddata', () => {
+        window.clearTimeout(timeout);
+        heroArt?.classList.add('avatar-is-video');
+        heroAvatarVideo.play().catch(fallback);
+        finish();
+      }, { once: true });
+      heroAvatarVideo.addEventListener('error', () => {
+        window.clearTimeout(timeout);
+        fallback();
+      }, { once: true });
+      heroAvatarVideo.src = avatarMovie;
+      heroAvatarVideo.preload = 'auto';
+      heroAvatarVideo.load();
+    });
+  })();
+  heroAvatarReady.then(() => setLoadingStage(58, 'Готую персонажа...'));
+
+  const coverExtensions = ['.mp4', '.webm', '.webp', '.jpg', '.jpeg', '.png', '.gif'];
+  const portraitCoverQuery = window.matchMedia('(orientation: portrait)');
+  const coverAssetsReady = Promise.all([
+    findAsset('Images/cover1', coverExtensions),
+    findAsset('Images/cover2', coverExtensions)
+  ]).then(([coverOne, coverTwo]) => {
+    const fallback = 'Images/cover.jpg';
+    const applyCover = () => {
+      const preferred = portraitCoverQuery.matches ? (coverTwo || coverOne) : (coverOne || coverTwo);
+      const selected = reduceMotion && preferred && /\.(mp4|webm)$/i.test(preferred) ? fallback : (preferred || fallback);
+      if (!musicScene || !musicFilm) return;
+      if (musicScene.dataset.coverPath === selected) return;
+      musicScene.dataset.coverPath = selected;
+      musicScene.classList.remove('has-cover-image', 'video-ready');
+      musicFilm.pause();
+      if (/\.(mp4|webm)$/i.test(selected)) {
+        musicScene.dataset.coverKind = 'video';
+        musicScene.dataset.coverSource = selected;
+        musicFilm.poster = fallback;
+        filmRequested = false;
+        if (filmVisible) startMusicCoverVideo();
+      } else {
+        musicScene.dataset.coverKind = 'image';
+        musicScene.style.setProperty('--music-cover-image', `url("${selected}")`);
+        musicScene.classList.add('has-cover-image');
+        musicFilm.removeAttribute('src');
+        musicFilm.load();
+        filmRequested = false;
+      }
+    };
+    applyCover();
+    const onOrientationChange = () => applyCover();
+    if (portraitCoverQuery.addEventListener) portraitCoverQuery.addEventListener('change', onOrientationChange);
+    else portraitCoverQuery.addListener(onOrientationChange);
+    return true;
+  });
+  coverAssetsReady.then(() => setLoadingStage(78, 'Вибираю правильний формат...'));
+
+  const pageLoaded = document.readyState === 'complete'
+    ? Promise.resolve()
+    : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
+  const fontsLoaded = document.fonts?.ready || Promise.resolve();
+  pageLoaded.then(() => setLoadingStage(28, 'Завантажую сцени...'));
+  fontsLoaded.then(() => setLoadingStage(43, 'Підключаю типографіку...'));
+  const finishLoading = () => {
+    if (!document.body.classList.contains('is-loading') || loadingFinishStarted) return;
+    loadingFinishStarted = true;
+    setLoadingStage(100, 'Світ готовий!');
+    window.setTimeout(() => {
+      document.body.classList.remove('is-loading');
+      document.body.classList.add('is-ready');
+      siteLoader?.setAttribute('aria-hidden', 'true');
+      requestAnimationFrame(requestScrollScene);
+      animateHeroLetters();
+    }, 420);
+  };
+  const animateHeroLetters = () => {
+    const target = document.querySelector('.hero-typewriter');
+    if (!target) return;
+    const text = target.dataset.text || target.textContent.trim();
+    target.setAttribute('aria-label', text);
+    if (reduceMotion) return;
+    target.replaceChildren();
+    [...text].forEach((character, index) => {
+      const letter = document.createElement('span');
+      letter.className = 'hero-letter';
+      letter.style.setProperty('--letter-index', index);
+      letter.textContent = character;
+      target.append(letter);
+    });
+    target.classList.add('letters-ready');
+  };
+  Promise.allSettled([heroAvatarReady, coverAssetsReady, pageLoaded, fontsLoaded]).then(() => {
+    setLoadingStage(94, 'Завершую збірку...');
+    const wait = Math.max(0, 1450 - (performance.now() - startedAt));
+    window.setTimeout(finishLoading, wait + 120);
+  });
+  window.setTimeout(finishLoading, 7200);
+
+  const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+  const updateScrollScene = () => {
+    motionFrame = 0;
+    const viewportHeight = window.innerHeight || 1;
+    const pageRange = Math.max(1, document.documentElement.scrollHeight - viewportHeight);
+    const pageProgress = clamp(window.scrollY / pageRange);
+    progressBar?.style.setProperty('--page-progress', String(pageProgress));
+    scenes.forEach((scene) => {
+      const bounds = scene.getBoundingClientRect();
+      const centerDistance = Math.abs(bounds.top + bounds.height / 2 - viewportHeight / 2);
+      const sceneProgress = clamp(1 - centerDistance / (viewportHeight * .9));
+      scene.style.setProperty('--scene-progress', sceneProgress.toFixed(3));
+
+      if (scene.id === 'favgame' && gameFrames.length) {
+        const travel = clamp((viewportHeight - bounds.top) / (bounds.height + viewportHeight));
+        const frameIndex = Math.min(gameFrames.length - 1, Math.floor(travel * gameFrames.length));
+        gameFrames.forEach((frame, index) => frame.classList.toggle('is-active', index === frameIndex));
+        if (gameCurrent) gameCurrent.textContent = String(frameIndex + 1).padStart(2, '0');
+      }
+    });
+  };
+  const requestScrollScene = () => {
+    if (!motionFrame) motionFrame = requestAnimationFrame(updateScrollScene);
+  };
+  window.addEventListener('scroll', requestScrollScene, { passive: true });
+  window.addEventListener('resize', requestScrollScene, { passive: true });
+  requestScrollScene();
+
+  // Reveal each composition as it enters view, with motion removed when requested.
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(({ target, isIntersecting }) => target.classList.toggle('is-visible', isIntersecting));
+  }, { threshold: .1, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach((element, index) => {
+    if (reduceMotion) element.classList.add('is-visible');
+    else {
+      element.style.transitionDelay = `${Math.min(index % 4, 3) * 75}ms`;
+      revealObserver.observe(element);
+    }
+  });
+  requestAnimationFrame(() => document.body.classList.add('is-ready'));
+
+  // A soft cursor glow adds depth on precise-pointer devices; touch screens stay clean.
+  const pointerAura = document.querySelector('.pointer-aura');
+  if (pointerAura && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let pointerFrame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+    document.addEventListener('pointermove', (event) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      document.body.classList.add('pointer-active');
+      if (pointerFrame) return;
+      pointerFrame = requestAnimationFrame(() => {
+        pointerAura.style.left = `${pointerX}px`;
+        pointerAura.style.top = `${pointerY}px`;
+        pointerFrame = 0;
+      });
+    }, { passive: true });
+    document.addEventListener('pointerleave', () => document.body.classList.remove('pointer-active'));
   }
 
+  // Keep the chapter rail in sync with the scene nearest the middle of the screen.
+  const railObserver = new IntersectionObserver((entries) => {
+    entries.forEach(({ target, isIntersecting }) => {
+      target.classList.toggle('scene-active', isIntersecting);
+      if (!isIntersecting) return;
+      const currentId = target.id || 'top';
+      railLinks.forEach((link) => link.classList.toggle('is-current', link.hash === `#${currentId}`));
+      document.querySelectorAll('.main-nav a').forEach((link) => link.classList.toggle('is-active', link.hash === `#${currentId}`));
+    });
+  }, { threshold: 0, rootMargin: '-48% 0px -48% 0px' });
+  document.querySelectorAll('main > section').forEach((scene) => railObserver.observe(scene));
+  railObserver.observe(document.querySelector('.hero-scene'));
+
+  // Mobile navigation.
+  const menuToggle = document.querySelector('.menu-toggle');
+  const mainNav = document.querySelector('.main-nav');
+  menuToggle?.addEventListener('click', () => {
+    const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
+    menuToggle.setAttribute('aria-expanded', String(!isOpen));
+    menuToggle.setAttribute('aria-label', isOpen ? 'Відкрити меню' : 'Закрити меню');
+    mainNav?.classList.toggle('is-open', !isOpen);
+  });
+  mainNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+    menuToggle?.setAttribute('aria-expanded', 'false');
+    menuToggle?.setAttribute('aria-label', 'Відкрити меню');
+    mainNav.classList.remove('is-open');
+  }));
+
+  // Only load and play the selected cover video while the music scene is visible.
+  if (musicScene && musicFilm && !reduceMotion) {
+    musicFilm.addEventListener('playing', () => musicScene.classList.add('video-ready'));
+    musicFilm.addEventListener('error', () => {
+      if (musicScene.dataset.coverKind !== 'video') return;
+      musicFilm.pause();
+      musicScene.classList.remove('video-ready');
+      musicScene.dataset.coverKind = 'image';
+      musicScene.style.setProperty('--music-cover-image', 'url("Images/cover.jpg")');
+      musicScene.classList.add('has-cover-image');
+      filmRequested = false;
+    });
+    const musicCoverObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        filmVisible = entry.isIntersecting;
+        if (!filmVisible) {
+          musicFilm.pause();
+          musicScene.classList.remove('video-ready');
+          return;
+        }
+        startMusicCoverVideo();
+      });
+    }, { threshold: .18, rootMargin: '80px 0px 80px 0px' });
+    musicCoverObserver.observe(musicScene);
+  }
+
+  // Sticker clips are requested only as they approach the viewport.
+  const stickerClips = document.querySelectorAll('.sticker-float[data-sticker]');
+  if (!reduceMotion && stickerClips.length) {
+    const stickerObserver = new IntersectionObserver((entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (isIntersecting) {
+          if (!target.hasAttribute('src')) target.src = target.dataset.sticker;
+          target.play().catch(() => {});
+        } else {
+          target.pause();
+        }
+      });
+    }, { rootMargin: '160px 0px 160px 0px' });
+    stickerClips.forEach((clip) => stickerObserver.observe(clip));
+  }
+
+  // Current Steam stats remain live from the existing JSON file.
   const steamGames = document.querySelector('#steam-games');
   if (steamGames) {
     fetch('steam-stats.json', { cache: 'no-store' })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) throw new Error('Steam stats unavailable');
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         const games = Array.isArray(data.games) ? data.games.slice(0, 3) : [];
-        if (!games.length) {
-          throw new Error('No recently played games');
-        }
+        if (!games.length) throw new Error('No recently played games');
         steamGames.replaceChildren(...games.map((game, index) => {
-          const article = document.createElement('article');
-          article.className = 'steam-game';
-
+          const row = document.createElement('article');
+          row.className = 'steam-game';
           const rank = document.createElement('span');
           rank.className = 'steam-game-rank';
-          rank.textContent = index + 1;
-
+          rank.textContent = String(index + 1).padStart(2, '0');
           const art = document.createElement('div');
           art.className = 'steam-game-art';
-
           const image = document.createElement('img');
           image.src = game.image;
           image.alt = game.name;
@@ -44,41 +347,29 @@ document.addEventListener('DOMContentLoaded',()=>{
           const imageBase = typeof game.image === 'string'
             ? game.image.match(/^https:\/\/cdn\.cloudflare\.steamstatic\.com\/steam\/apps\/\d+\//)?.[0]
             : null;
-          const alternateImageNames = [
-            'header.jpg',
-            'capsule_467x181.jpg',
-            'capsule_616x353.jpg',
-            'library_hero.jpg',
-            'library_600x900.jpg'
-          ];
-          let alternateImageIndex = 0;
+          const alternates = ['header.jpg', 'capsule_467x181.jpg', 'capsule_616x353.jpg', 'library_hero.jpg', 'library_600x900.jpg'];
+          let alternateIndex = 0;
           image.addEventListener('error', () => {
-            if (imageBase && alternateImageIndex < alternateImageNames.length) {
-              image.src = `${imageBase}${alternateImageNames[alternateImageIndex]}`;
-              alternateImageIndex += 1;
+            if (imageBase && alternateIndex < alternates.length) {
+              image.src = `${imageBase}${alternates[alternateIndex++]}`;
               return;
             }
             art.classList.add('has-fallback');
           });
-
           const fallback = document.createElement('span');
           fallback.className = 'steam-game-art-fallback';
           fallback.textContent = game.name;
           fallback.setAttribute('aria-hidden', 'true');
           art.append(image, fallback);
-
           const info = document.createElement('div');
           info.className = 'steam-game-info';
-
           const name = document.createElement('h3');
           name.textContent = game.name;
-
           const hours = document.createElement('p');
           hours.textContent = `${Math.round(Number(game.hours) * 10) / 10} год за 2 тижні`;
           info.append(name, hours);
-
-          article.append(rank, art, info);
-          return article;
+          row.append(rank, art, info);
+          return row;
         }));
       })
       .catch(() => {
@@ -86,633 +377,108 @@ document.addEventListener('DOMContentLoaded',()=>{
       });
   }
 
-  const loader = document.querySelector('.site-loader');
-  const loadingElements = document.querySelectorAll([
-    '.site-page .hero-avatar-wrap > *',
-    '.site-page .hero-copy > *',
-    '.site-page .hero-copy .btn',
-    '.site-page main .card summary',
-    '.site-page main .card h2',
-    '.site-page main .card h3',
-    '.site-page main .card h4',
-    '.site-page main .card p',
-    '.site-page main .card li',
-    '.site-page main .card figure',
-    '.site-page main .card img',
-    '.site-page main .card iframe',
-    '.site-page main .card .panel',
-    '.site-page main .card .btn',
-    '.site-page .site-footer > *'
-  ].join(','));
-  loadingElements.forEach(element => {
-    const delay = Math.round(Math.random() * 2200);
-    const direction = Math.random() > 0.5 ? 1 : -1;
-    element.style.setProperty('--loading-delay', `${delay}ms`);
-    element.style.setProperty('--loading-direction', direction);
+  // Copy names and give immediate feedback.
+  const copyText = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      const helper = document.createElement('textarea');
+      helper.value = value;
+      helper.style.position = 'fixed';
+      helper.style.opacity = '0';
+      document.body.append(helper);
+      helper.select();
+      document.execCommand('copy');
+      helper.remove();
+    }
+  };
+  document.querySelectorAll('.copiable-name').forEach((element) => {
+    const name = element.querySelector('.name-text')?.textContent.trim();
+    if (!name) return;
+    let feedback = element.querySelector('.copy-feedback');
+    if (!feedback) {
+      feedback = document.createElement('span');
+      feedback.className = 'copy-feedback';
+      element.append(feedback);
+    }
+    feedback.textContent = 'Скопіювати?';
+    const copy = async () => {
+      await copyText(name);
+      feedback.textContent = 'Скопійовано!';
+      element.classList.add('copied');
+      window.setTimeout(() => {
+        element.classList.remove('copied');
+        feedback.textContent = 'Скопіювати?';
+      }, 1100);
+    };
+    element.addEventListener('click', (event) => {
+      if (event.target.closest('.copy-icons')) return;
+      copy();
+    });
+    element.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        copy();
+      }
+    });
   });
-  const loaderStartedAt = performance.now();
-  const avatar = document.querySelector('.hero-avatar');
-  const avatarReady = avatar && avatar.complete
-    ? Promise.resolve()
-    : new Promise(resolve => {
-        avatar?.addEventListener('load', resolve, { once: true });
-        avatar?.addEventListener('error', resolve, { once: true });
-      });
-  const pageReady = document.readyState === 'complete'
-    ? Promise.resolve()
-    : new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
-  const timeout = new Promise(resolve => window.setTimeout(resolve, 4500));
-  let loaderFinished = false;
-
-  Promise.race([Promise.all([avatarReady, pageReady]), timeout]).then(() => {
-    if (loaderFinished) return;
-    loaderFinished = true;
-    const remaining = Math.max(0, 3300 - (performance.now() - loaderStartedAt));
-    window.setTimeout(() => {
-      document.body.classList.remove('is-loading');
-      document.documentElement.style.overflowY = '';
-      document.body.style.overflowY = '';
-      const loaderScrollBehavior = document.documentElement.style.scrollBehavior;
-      document.documentElement.style.scrollBehavior = 'auto';
-      window.scrollTo(0, 0);
-      document.documentElement.style.scrollBehavior = loaderScrollBehavior;
-      loader?.setAttribute('aria-hidden', 'true');
-    }, remaining);
+  document.querySelectorAll('.copiable-mikus').forEach((element) => {
+    element.addEventListener('click', (event) => {
+      if (event.target.closest('.mikus-icons')) return;
+      copyText('vadigr123');
+      element.classList.add('copied');
+      const feedback = element.querySelector('.copy-feedback');
+      if (feedback) feedback.textContent = 'Скопійовано!';
+      window.setTimeout(() => element.classList.remove('copied'), 1000);
+    });
+    element.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        element.click();
+      }
+    });
   });
 
-  // Give each background shape its own subtle pointer parallax.
-  const supportsPointerMotion = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const abstractShapes = document.querySelectorAll('#bg-abstract .shape');
-  if (supportsPointerMotion) {
-    let pointerFrame = 0;
-    document.addEventListener('pointermove', (event) => {
-      if (pointerFrame) return;
-      pointerFrame = window.requestAnimationFrame(() => {
-        if (document.body.classList.contains('performance-lite')) {
-          pointerFrame = 0;
-          return;
-        }
-        const normalizedX = event.clientX / window.innerWidth - 0.5;
-        const normalizedY = event.clientY / window.innerHeight - 0.5;
-        abstractShapes.forEach((shape, index) => {
-          const depth = 0.35 + (index % 4) * 0.12;
-          shape.style.setProperty('--shape-shift-x', `${(normalizedX * 28 * depth).toFixed(2)}px`);
-          shape.style.setProperty('--shape-shift-y', `${(normalizedY * 20 * depth).toFixed(2)}px`);
-        });
-        pointerFrame = 0;
-      });
-    }, { passive: true });
-  }
+  // Click-to-zoom for character art and the thank-you artwork.
+  const lightbox = document.createElement('div');
+  lightbox.className = 'lightbox';
+  lightbox.setAttribute('role', 'dialog');
+  lightbox.setAttribute('aria-modal', 'true');
+  lightbox.setAttribute('aria-label', 'Перегляд зображення');
+  const lightboxImage = document.createElement('img');
+  const lightboxClose = document.createElement('button');
+  lightboxClose.type = 'button';
+  lightboxClose.setAttribute('aria-label', 'Закрити');
+  lightboxClose.textContent = '×';
+  lightbox.append(lightboxImage, lightboxClose);
+  document.body.append(lightbox);
+  const closeLightbox = () => {
+    lightbox.classList.remove('is-open');
+    document.body.style.overflow = '';
+    lightboxImage.removeAttribute('src');
+  };
+  document.querySelectorAll('.character-visual img, .thanks-art img, .hero-avatar').forEach((image) => {
+    image.addEventListener('click', () => {
+      lightboxImage.src = image.currentSrc || image.src;
+      lightboxImage.alt = image.alt;
+      lightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      lightboxClose.focus();
+    });
+  });
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox || event.target === lightboxClose) closeLightbox();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeLightbox();
+  });
 
-  let scrollFrame = 0;
-  if (supportsPointerMotion) {
-    window.addEventListener('scroll', () => {
-      if (scrollFrame) return;
-      scrollFrame = window.requestAnimationFrame(() => {
-        const lift = -window.scrollY * 0.12;
-        document.documentElement.style.setProperty('--scroll-lift', `${lift.toFixed(2)}px`);
-        scrollFrame = 0;
-      });
-    }, { passive: true });
-  }
-
+  // Footer year and return-to-top control.
+  const year = document.querySelector('#year');
+  if (year) year.textContent = new Date().getFullYear();
   const backToTop = document.querySelector('.back-to-top');
-  if (backToTop) {
-    let flightFrame = 0;
-    let restoreScrollBehavior = '';
-
-    const updateBackToTop = () => {
-      backToTop.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.7);
-    };
-
-    const cancelFlight = () => {
-      if (!backToTop.classList.contains('is-launching')) return;
-      window.cancelAnimationFrame(flightFrame);
-      backToTop.classList.remove('is-launching');
-      backToTop.style.removeProperty('--flight-y');
-      backToTop.style.removeProperty('--flight-scale');
-      backToTop.style.removeProperty('--flight-rotate');
-      document.documentElement.style.scrollBehavior = restoreScrollBehavior;
-      updateBackToTop();
-    };
-
-    window.addEventListener('scroll', updateBackToTop, { passive: true });
-    window.addEventListener('wheel', cancelFlight, { passive: true });
-    window.addEventListener('touchstart', cancelFlight, { passive: true });
-    updateBackToTop();
-    backToTop.addEventListener('click', () => {
-      if (backToTop.classList.contains('is-launching')) return;
-      const startingScroll = window.scrollY;
-      if (startingScroll <= 0) return;
-
-      backToTop.classList.add('is-launching');
-      backToTop.classList.remove('is-visible');
-      restoreScrollBehavior = document.documentElement.style.scrollBehavior;
-      document.documentElement.style.scrollBehavior = 'auto';
-      const flightStartedAt = performance.now();
-      const flightDuration = 1500;
-
-      const animateFlight = (now) => {
-        const progress = Math.min(1, (now - flightStartedAt) / flightDuration);
-        const easedProgress = 1 - Math.pow(1 - progress, 3);
-        const flightDistance = window.innerHeight * 1.28;
-
-        window.scrollTo({
-          top: startingScroll * (1 - easedProgress),
-          behavior: 'auto'
-        });
-        backToTop.style.setProperty('--flight-y', `${(-flightDistance * easedProgress).toFixed(2)}px`);
-        backToTop.style.setProperty('--flight-scale', (1 - easedProgress * 0.48).toFixed(3));
-        backToTop.style.setProperty('--flight-rotate', `${(-18 * easedProgress).toFixed(2)}deg`);
-
-        if (progress < 1) {
-          flightFrame = window.requestAnimationFrame(animateFlight);
-          return;
-        }
-
-        window.scrollTo({ top: 0, behavior: 'auto' });
-        window.setTimeout(() => {
-          backToTop.classList.remove('is-launching');
-          backToTop.style.removeProperty('--flight-y');
-          backToTop.style.removeProperty('--flight-scale');
-          backToTop.style.removeProperty('--flight-rotate');
-          document.documentElement.style.scrollBehavior = restoreScrollBehavior;
-          updateBackToTop();
-        }, 180);
-      };
-
-      flightFrame = window.requestAnimationFrame(animateFlight);
-    });
-  }
-
-  // Check for cover.webm and use it as background video if available
-  const bgVideo = document.getElementById('bg-video');
-  if (bgVideo) {
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const videoSources = isMobile ? [] : ['Images/cover.webm', 'Images/cover.mp4'];
-    const fallbackImage = 'Images/cover.jpg';
-    let sourceIndex = 0;
-    let videoAvailable = false;
-
-    bgVideo.poster = fallbackImage;
-
-    const setFallback = () => {
-      videoAvailable = false;
-      document.body.classList.add('bg-video-fallback');
-      document.body.classList.remove('bg-video-ready');
-      bgVideo.pause();
-      bgVideo.removeAttribute('src');
-      bgVideo.load();
-    };
-
-    const loadNextVideo = () => {
-      if (sourceIndex >= videoSources.length) {
-        setFallback();
-        return;
-      }
-
-      bgVideo.src = videoSources[sourceIndex];
-      sourceIndex += 1;
-      bgVideo.load();
-    };
-
-    const updateVideoPlayback = () => {
-      if (!videoAvailable) return;
-      const active = document.visibilityState === 'visible' && document.hasFocus();
-      if (active) {
-        bgVideo.play().catch(() => {});
-      } else {
-        bgVideo.pause();
-      }
-    };
-
-    bgVideo.addEventListener('loadeddata', () => {
-      videoAvailable = true;
-      document.body.classList.add('bg-video-ready');
-      document.body.classList.remove('bg-video-fallback');
-      updateVideoPlayback();
-    });
-
-    bgVideo.addEventListener('error', loadNextVideo);
-
-    loadNextVideo();
-
-    document.addEventListener('visibilitychange', updateVideoPlayback);
-    window.addEventListener('focus', updateVideoPlayback);
-    window.addEventListener('blur', updateVideoPlayback);
-  }
-
-  // footer year
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  // slideshow backgrounds for favgame
-  const favSection = document.querySelector('#favgame');
-  const imgs = [
-    'Images/Machinarium.jpg',
-    'Images/Machinarium2.jpg',
-    'Images/Machinarium3.jpg',
-    'Images/Machinarium4.jpg'
-  ];
-  let current = 0;
-  function setBg(i){
-    favSection.style.setProperty('--bg-img', `url(${imgs[i]})`);
-    // create a nice background element
-    favSection.style.backgroundImage = `url(${imgs[i]})`;
-    favSection.style.backgroundSize = 'cover';
-    favSection.style.backgroundPosition = 'center';
-    favSection.style.transition = 'background-image 1s ease-in-out';
-    favSection.style.filter = 'none';
-  }
-  setBg(0);
-  setInterval(()=>{
-    current = (current+1) % imgs.length;
-    setBg(current);
-  },10000);
-
-  // Optional: simple smooth scrolling for quick links
-  document.querySelectorAll('a[href^="#"]').forEach(a=>{
-    a.addEventListener('click', (e)=>{
-      e.preventDefault();
-      const id = a.getAttribute('href').slice(1);
-      const el = document.getElementById(id);
-      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
-    });
-  });
-
-  // Copy-to-clipboard for any .copiable-name element
-  function showCopied(el){
-    const fb = el.querySelector('.copy-feedback');
-    if(fb){ fb.textContent = 'Скопійовано!'; }
-    el.classList.add('copied');
-    setTimeout(()=>{
-      el.classList.remove('copied');
-      if(fb){ fb.textContent = 'Скопіювати?'; }
-    },1200);
-  }
-
-  document.querySelectorAll('.copiable-name').forEach(wrapper=>{
-    const nameEl = wrapper.querySelector('.name-text');
-    if(!nameEl) return;
-    const text = nameEl.textContent.trim();
-    let fb = wrapper.querySelector('.copy-feedback');
-    if(!fb){
-      fb = document.createElement('span');
-      fb.className = 'copy-feedback';
-      wrapper.appendChild(fb);
-    }
-    fb.textContent = 'Скопіювати?';
-
-  // click handler
-  wrapper.addEventListener('click', async (e)=>{
-      try{
-        await navigator.clipboard.writeText(text);
-        showCopied(wrapper);
-      }catch(err){
-        // fallback: select text
-        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); showCopied(wrapper);}catch(e){} ta.remove();
-      }
-    });
-
-    // keyboard support: Enter / Space
-    wrapper.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter' || e.key === ' '){
-        e.preventDefault(); wrapper.click();
-      }
-    });
-    // prevent icon clicks from copying; allow clicking the +N to expand icons
-    const icons = wrapper.querySelector('.copy-icons');
-    if(icons){
-      icons.addEventListener('click', (ev)=>{
-        const more = ev.target.closest('.icon-more');
-        if(more){
-          // toggle expanded state
-          icons.classList.toggle('expanded');
-          // update badge text
-          const badge = icons.querySelector('.icon-more');
-          if(icons.classList.contains('expanded')) badge.textContent = '—'; else badge.textContent = '+1';
-          // stop propagation so parent doesn't copy
-          ev.stopPropagation();
-          ev.preventDefault();
-          return;
-        }
-        // if clicking an image, prevent it from bubbling to wrapper to avoid copy
-        if(ev.target && ev.target.tagName === 'IMG'){
-          ev.stopPropagation();
-        }
-      });
-    }
-  });
-
-  // Mikus: copy 'vadigr123' when clicked/activated
-  document.querySelectorAll('.copiable-mikus').forEach(el=>{
-    const toCopy = 'vadigr123';
-    let fb = el.querySelector('.copy-feedback');
-    if(!fb){ fb = document.createElement('span'); fb.className = 'copy-feedback'; el.appendChild(fb); }
-    fb.textContent = 'Скопіювати?';
-
-    el.addEventListener('click', async (e)=>{
-      try{ await navigator.clipboard.writeText(toCopy); }
-      catch(err){ const ta=document.createElement('textarea'); ta.value=toCopy; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
-      fb.textContent = 'Скопійовано!';
-      el.classList.add('copied');
-      setTimeout(()=>{
-        el.classList.remove('copied');
-        fb.textContent = 'Скопіювати?';
-      },900);
-    });
-    el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); el.click(); } });
-    const icons = el.querySelector('.mikus-icons'); if(icons){ icons.addEventListener('click', ev=>{ ev.stopPropagation(); }); }
-  });
-
-  // Check if user prefers reduced motion
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Scroll animations observer
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const desktopOnly = !isMobile;
-
-  const scrollObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const el = entry.target;
-      const isFavGame = el.classList.contains('favgame-animated');
-      const isCharacterCard = el.matches('.chars figure');
-
-      if (el.classList.contains('stagger')) {
-        const children = Array.from(el.children);
-        children.forEach((child, index) => {
-          if (entry.isIntersecting) {
-            const delay = isMobile ? 0 : index * 90;
-            child.style.transitionDelay = `${delay}ms`;
-            child.classList.add('scroll-visible');
-            child.classList.add('is-visible');
-            child.classList.remove('is-hidden');
-          } else {
-            child.classList.remove('scroll-visible');
-            child.classList.remove('is-visible');
-            child.classList.remove('is-hidden');
-            child.classList.remove('is-hovered');
-          }
-        });
-        return;
-      }
-
-      if (isFavGame) {
-        if (entry.isIntersecting) {
-          el.classList.add('is-visible');
-          el.classList.remove('is-hidden');
-        } else {
-          el.classList.remove('is-visible');
-          el.classList.add('is-hidden');
-        }
-        return;
-      }
-
-      if (isCharacterCard) {
-        if (entry.isIntersecting) {
-          el.classList.add('is-visible');
-          el.classList.remove('is-hidden');
-        } else {
-          el.classList.remove('is-visible');
-          el.classList.add('is-hidden');
-        }
-        return;
-      }
-
-      const revealTargets = el.classList.contains('scroll-fade-up') || el.classList.contains('scroll-fade-left') || el.classList.contains('scroll-fade-right') || el.classList.contains('scroll-scale')
-        ? [el]
-        : [];
-
-      revealTargets.forEach(target => {
-        if (entry.isIntersecting) {
-          target.classList.add('scroll-visible');
-          target.classList.add('is-visible');
-          target.classList.remove('is-hidden');
-        } else {
-          target.classList.remove('scroll-visible');
-          target.classList.remove('is-visible');
-          target.classList.add('is-hidden');
-        }
-      });
-    });
-  }, {
-    threshold: isMobile ? 0.08 : 0.03,
-    rootMargin: isMobile ? '0px 0px -6% 0px' : '0px 0px -18% 0px'
-  });
-
-  // Observe elements with scroll animations
-  const revealElements = Array.from(document.querySelectorAll([
-    '.scroll-fade-up',
-    '.scroll-fade-left',
-    '.scroll-fade-right',
-    '.scroll-scale',
-    '.stagger',
-    '.favgame-animated',
-    '.chars figure'
-  ].join(',')));
-
-  revealElements.forEach(el => scrollObserver.observe(el));
-
-  if (supportsHover && desktopOnly) {
-    document.querySelectorAll('.chars figure').forEach(card => {
-      card.addEventListener('pointermove', (event) => {
-        const rect = card.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - 0.5;
-        const y = (event.clientY - rect.top) / rect.height - 0.5;
-        card.style.setProperty('--tilt-x', `${(y * -8).toFixed(2)}deg`);
-        card.style.setProperty('--tilt-y', `${(x * 8).toFixed(2)}deg`);
-        card.classList.add('is-hovered');
-      });
-
-      card.addEventListener('pointerleave', () => {
-        card.classList.remove('is-hovered');
-        card.style.removeProperty('--tilt-x');
-        card.style.removeProperty('--tilt-y');
-      });
-    });
-  }
-
-  // Change page background when the Music section is visible
-  const musicSection = document.querySelector('#music');
-  if (musicSection) {
-    const musicObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          document.body.classList.add('music-bg');
-        } else {
-          document.body.classList.remove('music-bg');
-        }
-      });
-    }, {
-      threshold: 0,
-      rootMargin: '-50% 0px -50% 0px'
-    });
-    musicObserver.observe(musicSection);
-  }
-
-  // Switch to a lighter visual mode when the device cannot keep a stable frame rate.
-  (function setupPerformanceMode(){
-    const body = document.body;
-    const performanceVideo = document.getElementById('bg-video');
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const lowFpsLimit = 24;
-    const stableFpsLimit = 42;
-    const requiredSeconds = 5;
-    let frames = 0;
-    let lastSample = performance.now();
-    let lowFpsSeconds = 0;
-    let stableFpsSeconds = 0;
-    let lightweight = reduceMotion;
-    let performanceFrame = 0;
-
-    if (lightweight) body.classList.add('performance-lite');
-
-    function setLightweightMode(enabled){
-      lightweight = enabled;
-      body.classList.toggle('performance-lite', enabled);
-      if (enabled) {
-        performanceVideo?.pause();
-      } else if (body.classList.contains('bg-video-ready') && body.classList.contains('music-bg')) {
-        performanceVideo?.play().catch(() => {});
-      }
-    }
-
-    function measure(now){
-      if (document.hidden) {
-        performanceFrame = 0;
-        frames = 0;
-        lastSample = now;
-        return;
-      }
-
-      frames += 1;
-      const elapsed = now - lastSample;
-
-      if (elapsed >= 1000) {
-        const fps = frames * 1000 / elapsed;
-        frames = 0;
-        lastSample = now;
-
-        if (fps < lowFpsLimit) {
-          lowFpsSeconds += 1;
-          stableFpsSeconds = 0;
-        } else if (fps >= stableFpsLimit) {
-          stableFpsSeconds += 1;
-          lowFpsSeconds = 0;
-        } else {
-          lowFpsSeconds = 0;
-          stableFpsSeconds = 0;
-        }
-
-        if (!lightweight && lowFpsSeconds >= requiredSeconds) {
-          setLightweightMode(true);
-        } else if (lightweight && !reduceMotion && stableFpsSeconds >= requiredSeconds) {
-          setLightweightMode(false);
-        }
-      }
-
-      performanceFrame = window.requestAnimationFrame(measure);
-    }
-
-    const resumeMeasurement = () => {
-      if (!document.hidden && !performanceFrame) {
-        lastSample = performance.now();
-        performanceFrame = window.requestAnimationFrame(measure);
-      }
-    };
-
-    document.addEventListener('visibilitychange', resumeMeasurement, { passive: true });
-    performanceFrame = window.requestAnimationFrame(measure);
-  })();
-
-  // Додаємо функціонал для збільшення картинок
-  const zoomableImages = document.querySelectorAll('.chars img, .mikus, .hero-avatar');
-  
-  zoomableImages.forEach(img => {
-      img.classList.add('zoomable');
-      img.addEventListener('click', function(e) {
-          e.preventDefault();
-          if (this.classList.contains('zoomed')) {
-              this.classList.remove('zoomed');
-              document.body.style.overflow = '';
-          } else {
-              this.classList.add('zoomed');
-              document.body.style.overflow = 'hidden';
-          }
-      });
-  });
-
-  // Закриваємо зум при кліку поза картинкою
-  document.addEventListener('click', function(e) {
-      if (!e.target.classList.contains('zoomable')) {
-          document.querySelectorAll('.zoomed').forEach(img => {
-              img.classList.remove('zoomed');
-              document.body.style.overflow = '';
-          });
-      }
-  });
-
-  // Закриваємо зум при натисканні Escape
-  document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-          document.querySelectorAll('.zoomed').forEach(img => {
-              img.classList.remove('zoomed');
-              document.body.style.overflow = '';
-          });
-      }
-  });
-
-  // --- Intro typing + scroll action ---
-  (function(){
-    const heroIntro = document.querySelector('.hero.intro-fullscreen');
-    const scrollBtn = document.querySelector('.scroll-indicator');
-    if(!heroIntro) return;
-
-    const typedEl = heroIntro.querySelector('.typed');
-    let sequences = [];
-    try{ sequences = typedEl ? JSON.parse(typedEl.getAttribute('data-seq')) : []; }catch(e){ sequences = []; }
-
-    function delay(ms){ return new Promise(res=>setTimeout(res,ms)); }
-
-    async function typeTo(el, text, speed=45){
-      el.textContent = '';
-      for(let i=0;i<text.length;i++){
-        el.textContent += text[i];
-        await delay(speed + Math.random()*20);
-      }
-    }
-
-    async function backspace(el, count, speed=28){
-      for(let i=0;i<count;i++){
-        el.textContent = el.textContent.slice(0, -1);
-        await delay(speed + Math.random()*10);
-      }
-    }
-
-    // run sequence
-    (async function(){
-      if(!typedEl || !sequences.length){
-        typedEl && (typedEl.textContent = 'Привіт!');
-        await delay(300);
-        scrollBtn && (scrollBtn.style.opacity = 1);
-        return;
-      }
-      for(let i=0;i<sequences.length;i++){
-        await typeTo(typedEl, sequences[i], 45);
-        await delay(900);
-        if(i < sequences.length - 1) await backspace(typedEl, Math.min(18, sequences[i].length));
-      }
-      if(scrollBtn) scrollBtn.style.opacity = 1;
-    })();
-
-    function scrollToContent(){
-      const main = document.querySelector('main');
-      if(main) main.scrollIntoView({behavior:'smooth', block:'start'});
-    }
-
-    if(scrollBtn) scrollBtn.addEventListener('click', scrollToContent);
-    window.addEventListener('keydown', function keyHandler(e){
-      if(e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') scrollToContent();
-    });
-  })();
+  const updateBackToTop = () => backToTop?.classList.toggle('is-visible', window.scrollY > window.innerHeight * .75);
+  window.addEventListener('scroll', updateBackToTop, { passive: true });
+  backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+  updateBackToTop();
 });

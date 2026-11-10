@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-10T08:22:46.865Z",
+  "updatedAt": "2026-11-10T16:59:55.372Z",
   "games": [
     {
       "name": "Wallpaper Engine",
@@ -13,7 +13,7 @@
     },
     {
       "name": "SteamVR",
-      "hours": 0.6,
+      "hours": 0.7,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
     }
   ]

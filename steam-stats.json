@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-13T21:56:57.132Z",
+  "updatedAt": "2026-11-14T02:23:01.226Z",
   "games": [
     {
       "name": "VRChat",
@@ -7,14 +7,14 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/438100/capsule_231x87.jpg"
     },
     {
+      "name": "Wallpaper Engine",
+      "hours": 1.7,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
+    },
+    {
       "name": "SteamVR",
       "hours": 1.6,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
-    },
-    {
-      "name": "Wallpaper Engine",
-      "hours": 1.4,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
     }
   ]
 }

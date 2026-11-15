@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBar = document.querySelector('.scroll-progress span');
   const scenes = [...document.querySelectorAll('main > section')];
   const railLinks = [...document.querySelectorAll('.chapter-rail a')];
+  const chapterRail = document.querySelector('.chapter-rail');
+  const mainNav = document.querySelector('.main-nav');
+  const mainNavLinks = [...document.querySelectorAll('.main-nav a')];
   const gameFrames = [...document.querySelectorAll('.game-frame')];
   const gameCurrent = document.querySelector('.game-current');
   const siteLoader = document.querySelector('#site-loader');
@@ -20,6 +23,297 @@ document.addEventListener('DOMContentLoaded', () => {
   let filmVisible = false;
   let loadingFinishStarted = false;
   let motionFrame = 0;
+  const languageText = {
+    'Завантаження сайту': 'Loading the site',
+    'ПІДКЛЮЧАЮСЬ ДО СВІТУ': 'CONNECTING TO THE WORLD',
+    'Завантаження...': 'Loading...',
+    'Завантажую сцени...': 'Loading scenes...',
+    'Підключаю типографіку...': 'Setting the type...',
+    'Готую персонажа...': 'Getting the character ready...',
+    'Вибираю правильний формат...': 'Choosing the right format...',
+    'Завершую збірку...': 'Finishing the build...',
+    'Світ готовий!': 'The world is ready!',
+    'Навігація сторінкою': 'Page navigation',
+    'Знайти мене': 'Find me',
+    'Відкрити меню': 'Open menu',
+    'Закрити меню': 'Close menu',
+    'Розділи сайту': 'Page sections',
+    'Початок': 'Home',
+    'Про мене': 'About me',
+    'Персонажі': 'Characters',
+    'Гра': 'Game',
+    'Музика': 'Music',
+    'Контакти': 'Contact',
+    'Крамничка': 'Shop',
+    'Подяка': 'Thanks',
+    'Повернутися нагору': 'Back to top',
+    'Перегляд зображення': 'Image viewer',
+    'Закрити': 'Close',
+    'ПЕРСОНАЛЬНИЙ ПРОСТІР': 'MY PERSONAL SPACE',
+    'УКРАЇНА · ONLINE': 'UKRAINE · ONLINE',
+    'Привіт, я Nikitoss2ss': "Hey, I'm Nikitoss2ss",
+    'та Kuron': 'and Kuron',
+    'Nikitoss2ss та Kuron — мій особистий простір': 'Nikitoss2ss and Kuron — my personal space',
+    'Nikitoss2ss та Kuron — мій особистий простір': 'Nikitoss2ss and Kuron — my personal space',
+    'Заходь далі — тут багато чого цікавого про мене!': "Come on in — there's lots to discover about me!",
+    'ДОСЛІДИТИ ПРОСТІР': 'EXPLORE MY WORLD',
+    'Соцмережі': 'Socials',
+    'SCROLL TO EXPLORE': 'SCROLL TO EXPLORE',
+    'ЗНАЙОМСТВО': 'A LITTLE INTRO',
+    'Мене звати': "My name is",
+    'Нікіта': 'Nikita',
+    ', мені': ", I'm",
+    'років (день народження —': 'years old (birthday —',
+    '5 січня': 'January 5',
+    '), проживаю на західній Україні. Я високий, худий, веселий і трохи сором\'язливий, але дуже люблю спілкування — особливо з тими, хто теж в темі фуррі чи ігор.': '), and I live in western Ukraine. I’m tall, slim, cheerful, and a little shy, but I love meeting people — especially fellow furries and gamers.',
+    'Про мене': 'About me',
+    'Чим цікавлюсь': 'What I’m into',
+    'Програмування та IT': 'Programming & IT',
+    'Техніка — люблю розбирати гаджети': 'Tech — I love taking gadgets apart',
+    '3D-моделювання та анімація': '3D modeling & animation',
+    'Веду прямі трансляції й веду YouTube (ліниво, але впевнено)': 'I stream and make YouTube videos (slowly, but surely)',
+    'Граю: Roblox, Minecraft, Fortnite, ZZZ та багато іншого': 'I play Roblox, Minecraft, Fortnite, ZZZ, and lots more',
+    'VR — Oculus Quest / Meta Quest': 'VR — Oculus Quest / Meta Quest',
+    'Малювання та створення артів': 'Drawing & making art',
+    'Мій нікнейм всюди —': 'My username everywhere is',
+    '. Люблю мультиплеєр і знайомства в іграх — шукаю нових фуррі друзів 😺': '. I love multiplayer games and meeting people in-game — always happy to make new furry friends 😺',
+    'Скопійовано': 'Copied',
+    'Скопійовано!': 'Copied!',
+    'Скопіювати?': 'Click to copy',
+    'N° 01 — QUICK FACTS': 'N° 01 — QUICK FACTS',
+    'Факти': 'Quick facts',
+    'Улюблені кольори:': 'Favorite colors:',
+    'червоний та помаранчевий ❤️🧡': 'red and orange ❤️🧡',
+    'Платформи:': 'Platforms:',
+    'ПК, Xbox, VR': 'PC, Xbox, VR',
+    'Фурсона:': 'Fursona:',
+    '— кемоно дракончик': ' — a kemono dragon',
+    'Стиль —': 'My style:',
+    'гумор, меми, ігри': 'humor, memes, games',
+    'ОБРАЗИ Й АЛЬТЕР ЕГО': 'CHARACTERS & ALTER EGOS',
+    'Мої персонажі': 'My characters',
+    'ТРИ ОБРАЗИ. ОДНА ІСТОРІЯ.': 'THREE CHARACTERS. ONE STORY.',
+    'Чорний кемоно дракончик з червоним животом, крилами і вогником на хвості.': 'A black kemono dragon with a red belly, wings, and a little flame on his tail.',
+    'Наліпки Kuron': 'Kuron stickers',
+    'Майн стиль': 'Minecraft style',
+    'Nikitoss2ss (Майн стиль)': 'Nikitoss2ss (Minecraft style)',
+    'Білий верх, чорні порвані джинси, капелюх самурая та вушками — мій основний образ.': 'A white top, ripped black jeans, a samurai hat, and ears — my main look.',
+    'У костюмі червоного дракона — для веселих серверних пригод.': 'In a red dragon suit, ready for fun adventures on the server.',
+    'Наліпки Nikitoss2ss': 'Nikitoss2ss stickers',
+    'СВІТ, ДО ЯКОГО ПОВЕРТАЮСЬ': 'A WORLD I RETURN TO',
+    'МОЯ УЛЮБЛЕНА ГРА': 'MY FAVORITE GAME',
+    'Найулюбленіша гра —': 'My all-time favorite game —',
+    'Люблю': 'I love',
+    'за унікальний стиль малювання, атмосферу, сюжет і саундтреки.': 'for its unique art style, atmosphere, story, and soundtrack.',
+    'Короткий опис: пригодницька point-and-click гра з фокусом на пазли, атмосферу та емоції.': 'A point-and-click adventure focused on puzzles, atmosphere, and emotion.',
+    'В магазині': 'Visit the store',
+    'ЗАРАЗ У МОЄМУ STEAM': 'ON MY STEAM',
+    'Що я граю': 'What I’m playing',
+    'зараз': 'right now',
+    'Топ ігор за останні два тижні.': 'My most-played games over the last two weeks.',
+    'Відкрити профіль Steam': 'Open my Steam profile',
+    'Завантажуємо статистику Steam...': 'Loading Steam stats...',
+    'САУНДТРЕК ЦЬОГО ПРОСТОРУ': 'THE SOUNDTRACK TO THIS SPACE',
+    'Мій топ': 'My top',
+    'пісень': 'tracks',
+    "ЗАЛИШАЙМОСЬ НА ЗВ'ЯЗКУ": 'LET’S KEEP IN TOUCH',
+    'Зацікавився?': 'Curious?',
+    'Приєднуйся!': 'Come say hi!',
+    'Нікнейм всюди —': 'My username everywhere is',
+    'Приєднатися до сервера': 'Join the server',
+    'Відкрити профіль': 'Open profile',
+    'МАЛЕНЬКИЙ ФРАГМЕНТ СВІТУ KURON': 'A LITTLE PIECE OF KURON’S WORLD',
+    'Особливі речі з Kuron вже тут.': 'A few special things from Kuron are here.',
+    "Для замовлення зв'яжіться зі мною.": 'Get in touch to place an order.',
+    'Акрилова фігурка Kuron': 'Kuron acrylic figure',
+    'Акрилова фігурка заввишки 15 см із моєю фурсоною Kuron — маленький чорний дракончик, який додасть столу трохи характеру, крил і помаранчевого вогника.': 'A 15 cm acrylic figure of my fursona, Kuron — a little black dragon to bring some character, wings, and an orange spark to your desk.',
+    '250 грн': '250 UAH',
+    'Щось у процесі': 'Something in the works',
+    'Поки що тут живе лише передчуття.': 'For now, all that lives here is anticipation.',
+    'Сюрприз попереду': 'A surprise is coming',
+    'Ця історія ще тільки починається.': 'This story is only just beginning.',
+    'З ТЕПЛОМ І ВДЯЧНІСТЮ': 'WITH WARMTH & GRATITUDE',
+    'Подяка': 'Thanks',
+    'Дяка для': 'Thanks to',
+    'та': 'and',
+    'за LoRA і допомогу з генерацією зображень за допомогою ШІ.': 'for the LoRAs and help with AI image generation.',
+    'Підтримати:': 'Support:',
+    'НАГОРУ ↑': 'BACK TO TOP ↑',
+    '— всі права (майже) належать мені 😉': '— all rights (mostly) belong to me 😉',
+    'Оновлено:': 'Updated:',
+    'v 2.0.1 · Оновлено: 10.11.2026': 'v 2.0.1 · Updated: 10.11.2026',
+    'ГОД': 'HRS',
+    'ЧАС У ГРІ / ОСТАННІ 14 ДНІВ': 'PLAYTIME / LAST 14 DAYS',
+    'СТОРІНКА ГРИ ↗': 'GAME PAGE ↗',
+    'Не вдалося завантажити статистику Steam.': 'Could not load Steam stats.',
+    'Клацніть, щоб скопіювати': 'Click to copy',
+    'Копіювати?': 'Click to copy'
+  };
+  const englishLanguageText = Object.fromEntries(
+    Object.entries(languageText).map(([ukrainian, english]) => [english, ukrainian])
+  );
+  const languageAttributes = {
+    uk: {
+      loader: 'Завантаження сайту',
+      pageNavigation: 'Навігація сторінкою',
+      menuOpen: 'Відкрити меню',
+      menuClose: 'Закрити меню',
+      pageSections: 'Розділи сайту',
+      home: 'Початок',
+      about: 'Про мене',
+      characters: 'Персонажі',
+      game: 'Machinarium',
+      steam: 'Steam',
+      socials: 'Соцмережі',
+      shop: 'Крамничка',
+      thanks: 'Подяка',
+      backToTop: 'Повернутися нагору',
+      imageViewer: 'Перегляд зображення',
+      close: 'Закрити',
+      hero: 'Nikitoss2ss та Kuron — мій особистий простір',
+      wordmark: 'Nikitoss2ss та Kuron — на початок',
+      langButton: 'Перемкнути мову на англійську',
+      langTitle: 'Switch to English'
+    },
+    en: {
+      loader: 'Loading the site',
+      pageNavigation: 'Page navigation',
+      menuOpen: 'Open menu',
+      menuClose: 'Close menu',
+      pageSections: 'Page sections',
+      home: 'Home',
+      about: 'About me',
+      characters: 'Characters',
+      game: 'Machinarium',
+      steam: 'Steam',
+      socials: 'Socials',
+      shop: 'Shop',
+      thanks: 'Thanks',
+      backToTop: 'Back to top',
+      imageViewer: 'Image viewer',
+      close: 'Close',
+      hero: 'Nikitoss2ss and Kuron — my personal space',
+      wordmark: 'Nikitoss2ss and Kuron — back to top',
+      langButton: 'Switch language to Ukrainian',
+      langTitle: 'Switch to Ukrainian'
+    }
+  };
+  const languageTextNodes = [];
+  const languageWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  while (languageWalker.nextNode()) {
+    const node = languageWalker.currentNode;
+    if (node.nodeValue.trim() && node.parentElement !== loaderStatus) {
+      languageTextNodes.push({ node, original: node.nodeValue });
+    }
+  }
+  const languageToggle = document.querySelector('.language-toggle');
+  const detectBrowserLanguage = () => {
+    const preferredLanguage = navigator.languages?.[0] || navigator.language || 'en';
+    return /^(uk|be|ru)(-|$)/i.test(preferredLanguage) ? 'uk' : 'en';
+  };
+  let currentLanguage = detectBrowserLanguage();
+  try {
+    const savedLanguage = localStorage.getItem('site-language-manual');
+    if (savedLanguage === 'uk' || savedLanguage === 'en') currentLanguage = savedLanguage;
+  } catch (error) {
+    console.warn(`Could not read the saved language preference: ${error.message}`);
+  }
+  const applyLanguage = (language) => {
+    currentLanguage = language;
+    document.documentElement.lang = language;
+    const attributes = languageAttributes[language];
+    languageTextNodes.forEach(({ node, original }) => {
+      const source = original.trim();
+      const translated = language === 'en' ? languageText[source] : null;
+      node.nodeValue = translated
+        ? original.replace(source, translated)
+        : original;
+    });
+    if (loaderStatus) {
+      const currentMessage = loaderStatus.textContent.trim();
+      const translatedMessage = language === 'en'
+        ? languageText[currentMessage]
+        : englishLanguageText[currentMessage];
+      if (translatedMessage) loaderStatus.textContent = translatedMessage;
+    }
+    document.querySelector('.site-loader')?.setAttribute('aria-label', attributes.loader);
+    document.querySelector('.main-nav')?.setAttribute('aria-label', attributes.pageNavigation);
+    document.querySelector('.menu-toggle')?.setAttribute('aria-label', document.querySelector('.menu-toggle')?.getAttribute('aria-expanded') === 'true' ? attributes.menuClose : attributes.menuOpen);
+    document.querySelector('.chapter-rail')?.setAttribute('aria-label', attributes.pageSections);
+    const railLabels = [attributes.home, attributes.about, attributes.characters, attributes.game, attributes.steam, 'Music', attributes.socials, attributes.shop, attributes.thanks];
+    document.querySelectorAll('.chapter-rail a').forEach((link, index) => link.setAttribute('aria-label', railLabels[index]));
+    document.querySelector('#hero-title')?.setAttribute('aria-label', attributes.hero);
+    document.querySelector('.wordmark')?.setAttribute('aria-label', attributes.wordmark);
+    document.querySelector('.footer-mark')?.setAttribute('aria-label', attributes.wordmark);
+    document.querySelector('.back-to-top')?.setAttribute('aria-label', attributes.backToTop);
+    document.querySelector('.back-to-top')?.setAttribute('title', attributes.backToTop);
+    document.querySelector('.lightbox')?.setAttribute('aria-label', attributes.imageViewer);
+    document.querySelector('.lightbox button')?.setAttribute('aria-label', attributes.close);
+    document.querySelector('.shop-product-art img')?.setAttribute('alt', language === 'en' ? 'Kuron acrylic figure' : 'Акрилова фігурка Kuron');
+    document.querySelectorAll('.copy-feedback').forEach((feedback) => {
+      const copied = feedback.closest('.copied');
+      feedback.textContent = copied
+        ? language === 'en' ? 'Copied!' : 'Скопійовано!'
+        : language === 'en' ? 'Click to copy' : 'Скопіювати?';
+    });
+    const steamStatus = document.querySelector('.steam-status');
+    if (steamStatus) {
+      steamStatus.textContent = language === 'en' ? 'Could not load Steam stats.' : 'Не вдалося завантажити статистику Steam.';
+    }
+    document.querySelectorAll('.steam-game').forEach((gameCard) => {
+      const name = gameCard.querySelector('.steam-game-info h3')?.textContent || '';
+      const hours = Number(gameCard.dataset.gameHours) || 0;
+      gameCard.setAttribute('aria-label', language === 'en' ? `Open ${name} on Steam` : `Відкрити ${name} у Steam`);
+      const time = gameCard.querySelector('.steam-game-time');
+      if (time) {
+        time.textContent = `${Math.round(hours * 10) / 10} ${language === 'en' ? 'HRS' : 'ГОД'}`;
+        time.setAttribute('aria-label', language === 'en' ? `${hours} hours over the last two weeks` : `${hours} годин за два тижні`);
+      }
+      const hoursLabel = gameCard.querySelector('.steam-game-info > p');
+      if (hoursLabel) hoursLabel.textContent = language === 'en' ? 'PLAYTIME / LAST 14 DAYS' : 'ЧАС У ГРІ / ОСТАННІ 14 ДНІВ';
+      const meter = gameCard.querySelector('.steam-game-meter');
+      if (meter) meter.setAttribute('aria-label', language === 'en' ? `${hours} hours over the last two weeks` : `${hours} годин за останні два тижні`);
+      const openLabel = gameCard.querySelector('.steam-game-open');
+      if (openLabel) openLabel.textContent = language === 'en' ? 'GAME PAGE ↗' : 'СТОРІНКА ГРИ ↗';
+    });
+    document.querySelector('.language-toggle')?.setAttribute('aria-label', attributes.langButton);
+    document.querySelector('.language-toggle')?.setAttribute('title', attributes.langTitle);
+    if (languageToggle) {
+      languageToggle.querySelector('.language-toggle-label').textContent = language === 'en' ? 'UA' : 'EN';
+    }
+    window.requestAnimationFrame(() => {
+      const activeLink = mainNavLinks.find((link) => link.classList.contains('is-active'));
+      if (activeLink) {
+        mainNav.style.setProperty('--nav-indicator-x', `${activeLink.offsetLeft}px`);
+        mainNav.style.setProperty('--nav-indicator-width', `${activeLink.offsetWidth}px`);
+      }
+    });
+    document.title = language === 'en'
+      ? 'Nikitoss2ss / Kuron — Official Website'
+      : 'Nikitoss2ss / Kuron — Особистий сайт';
+    document.querySelector('meta[name="description"]')?.setAttribute('content', language === 'en'
+      ? 'Nikitoss2ss, also known as Kuron — developer, creator and animator.'
+      : 'Nikitoss2ss, також відомий як Kuron — розробник, творець та аніматор.');
+  };
+  applyLanguage(currentLanguage);
+  languageToggle?.addEventListener('click', () => {
+    if (languageToggle.classList.contains('is-switching')) return;
+    languageToggle.classList.add('is-switching');
+    document.body.classList.add('is-language-switching');
+    const nextLanguage = currentLanguage === 'uk' ? 'en' : 'uk';
+    window.setTimeout(() => {
+      applyLanguage(nextLanguage);
+      try {
+        localStorage.setItem('site-language-manual', nextLanguage);
+      } catch (error) {
+        console.warn(`Could not save the language preference: ${error.message}`);
+      }
+      languageToggle.classList.remove('is-switching');
+    }, reduceMotion ? 0 : 150);
+    window.setTimeout(() => {
+      document.body.classList.remove('is-language-switching');
+    }, reduceMotion ? 0 : 760);
+  });
 
   let loadingProgress = 0;
   let targetLoadingProgress = 4;
@@ -39,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const setLoadingStage = (progress, message) => {
     if (progress >= targetLoadingProgress) {
       targetLoadingProgress = progress;
-      if (loaderStatus) loaderStatus.textContent = message;
+      if (loaderStatus) loaderStatus.textContent = currentLanguage === 'en' ? languageText[message] || message : message;
     }
     if (!loadingAnimationFrame) loadingAnimationFrame = requestAnimationFrame(paintLoadingProgress);
   };
@@ -191,15 +485,70 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setTimeout(finishLoading, 7200);
 
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+  let activeSceneId = '';
+  let railArrivalTimer = 0;
+  const updateActiveNavigation = (activeScene) => {
+    const currentId = activeScene.id || 'top';
+    const activeSceneIndex = scenes.indexOf(activeScene);
+    const activeNavLink = mainNavLinks.find((link) => link.hash === `#${currentId}`)
+      || mainNavLinks.reduce((nearestLink, link) => {
+        const linkedScene = document.querySelector(link.hash);
+        return linkedScene && scenes.indexOf(linkedScene) <= activeSceneIndex ? link : nearestLink;
+      }, null)
+      || mainNavLinks[0];
+    const sceneChanged = currentId !== activeSceneId;
+    if (sceneChanged) {
+      activeSceneId = currentId;
+      scenes.forEach((scene) => scene.classList.toggle('scene-active', scene === activeScene));
+      railLinks.forEach((link) => {
+        const isCurrent = link.hash === `#${currentId}`;
+        link.classList.toggle('is-current', isCurrent);
+        link.classList.remove('is-arriving');
+        if (isCurrent && !reduceMotion) {
+          void link.offsetWidth;
+          link.classList.add('is-arriving');
+        }
+      });
+      mainNavLinks.forEach((link) => link.classList.toggle('is-active', link === activeNavLink));
+      if (!reduceMotion && chapterRail) {
+        chapterRail.classList.add('is-switching');
+        window.clearTimeout(railArrivalTimer);
+        railArrivalTimer = window.setTimeout(() => chapterRail.classList.remove('is-switching'), 700);
+      }
+    }
+
+    if (activeNavLink) {
+      mainNav.style.setProperty('--nav-indicator-x', `${activeNavLink.offsetLeft}px`);
+      mainNav.style.setProperty('--nav-indicator-width', `${activeNavLink.offsetWidth}px`);
+      mainNav.classList.add('has-active');
+    }
+
+    const activeRailLink = railLinks.find((link) => link.hash === `#${currentId}`);
+    if (chapterRail && activeRailLink) {
+      const railBounds = chapterRail.getBoundingClientRect();
+      const linkBounds = activeRailLink.getBoundingClientRect();
+      const isHorizontal = window.matchMedia('(max-width: 760px)').matches;
+      const x = isHorizontal ? linkBounds.left + linkBounds.width / 2 - railBounds.left - 4 : linkBounds.left - railBounds.left - 1;
+      const y = isHorizontal ? 0 : linkBounds.top + linkBounds.height / 2 - railBounds.top - 4;
+      chapterRail.style.setProperty('--rail-x', `${x}px`);
+      chapterRail.style.setProperty('--rail-y', `${y}px`);
+    }
+  };
   const updateScrollScene = () => {
     motionFrame = 0;
     const viewportHeight = window.innerHeight || 1;
     const pageRange = Math.max(1, document.documentElement.scrollHeight - viewportHeight);
     const pageProgress = clamp(window.scrollY / pageRange);
     progressBar?.style.setProperty('--page-progress', String(pageProgress));
+    let activeScene = scenes[0];
+    let nearestSceneDistance = Infinity;
     scenes.forEach((scene) => {
       const bounds = scene.getBoundingClientRect();
       const centerDistance = Math.abs(bounds.top + bounds.height / 2 - viewportHeight / 2);
+      if (centerDistance < nearestSceneDistance) {
+        nearestSceneDistance = centerDistance;
+        activeScene = scene;
+      }
       const sceneProgress = clamp(1 - centerDistance / (viewportHeight * .9));
       scene.style.setProperty('--scene-progress', sceneProgress.toFixed(3));
 
@@ -210,6 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameCurrent) gameCurrent.textContent = String(frameIndex + 1).padStart(2, '0');
       }
     });
+    updateActiveNavigation(activeScene);
   };
   const requestScrollScene = () => {
     if (!motionFrame) motionFrame = requestAnimationFrame(updateScrollScene);
@@ -251,31 +601,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('pointerleave', () => document.body.classList.remove('pointer-active'));
   }
 
-  // Keep the chapter rail in sync with the scene nearest the middle of the screen.
-  const railObserver = new IntersectionObserver((entries) => {
-    entries.forEach(({ target, isIntersecting }) => {
-      target.classList.toggle('scene-active', isIntersecting);
-      if (!isIntersecting) return;
-      const currentId = target.id || 'top';
-      railLinks.forEach((link) => link.classList.toggle('is-current', link.hash === `#${currentId}`));
-      document.querySelectorAll('.main-nav a').forEach((link) => link.classList.toggle('is-active', link.hash === `#${currentId}`));
-    });
-  }, { threshold: 0, rootMargin: '-48% 0px -48% 0px' });
-  document.querySelectorAll('main > section').forEach((scene) => railObserver.observe(scene));
-  railObserver.observe(document.querySelector('.hero-scene'));
-
   // Mobile navigation.
   const menuToggle = document.querySelector('.menu-toggle');
-  const mainNav = document.querySelector('.main-nav');
   menuToggle?.addEventListener('click', () => {
     const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
     menuToggle.setAttribute('aria-expanded', String(!isOpen));
-    menuToggle.setAttribute('aria-label', isOpen ? 'Відкрити меню' : 'Закрити меню');
+    menuToggle.setAttribute('aria-label', isOpen
+      ? languageAttributes[currentLanguage].menuOpen
+      : languageAttributes[currentLanguage].menuClose);
     mainNav?.classList.toggle('is-open', !isOpen);
   });
   mainNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
     menuToggle?.setAttribute('aria-expanded', 'false');
-    menuToggle?.setAttribute('aria-label', 'Відкрити меню');
+    menuToggle?.setAttribute('aria-label', languageAttributes[currentLanguage].menuOpen);
     mainNav.classList.remove('is-open');
   }));
 
@@ -335,13 +673,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return response.json();
       })
       .then((data) => {
-        const games = Array.isArray(data.games) ? data.games.filter((game) => !isExcludedSteamApp(game)).slice(0, 3) : [];
+        const games = Array.isArray(data.games)
+          ? data.games
+            .filter((game) => !isExcludedSteamApp(game))
+            .sort((a, b) => (Number(b.playtimeMinutes ?? b.hours) || 0) - (Number(a.playtimeMinutes ?? a.hours) || 0))
+            .slice(0, 3)
+          : [];
         if (!games.length) throw new Error('No recently played games');
         steamGames.classList.toggle('has-one-game', games.length === 1);
         const maxHours = Math.max(...games.map((game) => Number(game.hours) || 0), .1);
         steamGames.replaceChildren(...games.map((game, index) => {
           const row = document.createElement('a');
           row.className = 'steam-game';
+          row.dataset.gameHours = String(game.hours);
           const appIdFromImage = typeof game.image === 'string'
             ? game.image.match(/\/steam\/apps\/(\d+)\//)?.[1]
             : null;
@@ -351,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
             : `https://store.steampowered.com/search/?term=${encodeURIComponent(game.name || '')}`;
           row.target = '_blank';
           row.rel = 'noopener noreferrer';
-          row.setAttribute('aria-label', `Відкрити ${game.name} у Steam`);
+          row.setAttribute('aria-label', currentLanguage === 'en' ? `Open ${game.name} on Steam` : `Відкрити ${game.name} у Steam`);
           row.style.setProperty('--card-index', String(index));
           const rank = document.createElement('span');
           rank.className = 'steam-game-rank';
@@ -393,31 +737,34 @@ document.addEventListener('DOMContentLoaded', () => {
           });
           const time = document.createElement('span');
           time.className = 'steam-game-time';
-          time.textContent = `${Math.round(Number(game.hours) * 10) / 10} ГОД`;
-          time.setAttribute('aria-label', `${game.hours} годин за два тижні`);
+          time.textContent = `${Math.round(Number(game.hours) * 10) / 10} ${currentLanguage === 'en' ? 'HRS' : 'ГОД'}`;
+          time.setAttribute('aria-label', currentLanguage === 'en' ? `${game.hours} hours over the last two weeks` : `${game.hours} годин за два тижні`);
           art.append(image, fallback, rank, time);
           const info = document.createElement('div');
           info.className = 'steam-game-info';
           const name = document.createElement('h3');
           name.textContent = game.name;
           const hours = document.createElement('p');
-          hours.textContent = 'ЧАС У ГРІ / ОСТАННІ 14 ДНІВ';
+          hours.textContent = currentLanguage === 'en' ? 'PLAYTIME / LAST 14 DAYS' : 'ЧАС У ГРІ / ОСТАННІ 14 ДНІВ';
           const meter = document.createElement('div');
           meter.className = 'steam-game-meter';
-          meter.setAttribute('aria-label', `${game.hours} годин за останні два тижні`);
+          meter.setAttribute('aria-label', currentLanguage === 'en' ? `${game.hours} hours over the last two weeks` : `${game.hours} годин за останні два тижні`);
           const meterFill = document.createElement('span');
           meterFill.style.setProperty('--playtime-fill', `${Math.max(8, (Number(game.hours) || 0) / maxHours * 100)}%`);
           meter.append(meterFill);
           const openLabel = document.createElement('span');
           openLabel.className = 'steam-game-open';
-          openLabel.textContent = 'СТОРІНКА ГРИ ↗';
+          openLabel.textContent = currentLanguage === 'en' ? 'GAME PAGE ↗' : 'СТОРІНКА ГРИ ↗';
           info.append(name, hours, meter, openLabel);
           row.append(art, info);
           return row;
         }));
       })
       .catch(() => {
-        steamGames.innerHTML = '<p class="steam-status">Не вдалося завантажити статистику Steam.</p>';
+        const status = document.createElement('p');
+        status.className = 'steam-status';
+        status.textContent = currentLanguage === 'en' ? 'Could not load Steam stats.' : 'Не вдалося завантажити статистику Steam.';
+        steamGames.replaceChildren(status);
       });
   }
 
@@ -445,14 +792,14 @@ document.addEventListener('DOMContentLoaded', () => {
       feedback.className = 'copy-feedback';
       element.append(feedback);
     }
-    feedback.textContent = 'Скопіювати?';
+    feedback.textContent = currentLanguage === 'en' ? 'Click to copy' : 'Скопіювати?';
     const copy = async () => {
       await copyText(name);
-      feedback.textContent = 'Скопійовано!';
+      feedback.textContent = currentLanguage === 'en' ? 'Copied!' : 'Скопійовано!';
       element.classList.add('copied');
       window.setTimeout(() => {
         element.classList.remove('copied');
-        feedback.textContent = 'Скопіювати?';
+        feedback.textContent = currentLanguage === 'en' ? 'Click to copy' : 'Скопіювати?';
       }, 1100);
     };
     element.addEventListener('click', (event) => {
@@ -472,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
       copyText('vadigr123');
       element.classList.add('copied');
       const feedback = element.querySelector('.copy-feedback');
-      if (feedback) feedback.textContent = 'Скопійовано!';
+      if (feedback) feedback.textContent = currentLanguage === 'en' ? 'Copied!' : 'Скопійовано!';
       window.setTimeout(() => element.classList.remove('copied'), 1000);
     });
     element.addEventListener('keydown', (event) => {
@@ -488,11 +835,11 @@ document.addEventListener('DOMContentLoaded', () => {
   lightbox.className = 'lightbox';
   lightbox.setAttribute('role', 'dialog');
   lightbox.setAttribute('aria-modal', 'true');
-  lightbox.setAttribute('aria-label', 'Перегляд зображення');
+  lightbox.setAttribute('aria-label', languageAttributes[currentLanguage].imageViewer);
   const lightboxImage = document.createElement('img');
   const lightboxClose = document.createElement('button');
   lightboxClose.type = 'button';
-  lightboxClose.setAttribute('aria-label', 'Закрити');
+  lightboxClose.setAttribute('aria-label', languageAttributes[currentLanguage].close);
   lightboxClose.textContent = '×';
   lightbox.append(lightboxImage, lightboxClose);
   document.body.append(lightbox);

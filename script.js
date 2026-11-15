@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'ЗАРАЗ У МОЄМУ STEAM': 'ON MY STEAM',
     'Що я граю': 'What I’m playing',
     'зараз': 'right now',
-    'Топ ігор за останні два тижні.': 'My most-played games over the last two weeks.',
+    'Топ-7 ігор за останні два тижні.': 'My top 7 games over the last two weeks.',
     'Відкрити профіль Steam': 'Open my Steam profile',
     'Завантажуємо статистику Steam...': 'Loading Steam stats...',
     'САУНДТРЕК ЦЬОГО ПРОСТОРУ': 'THE SOUNDTRACK TO THIS SPACE',
@@ -675,16 +675,15 @@ document.addEventListener('DOMContentLoaded', () => {
       .then((data) => {
         const games = Array.isArray(data.games)
           ? data.games
-            .filter((game) => !isExcludedSteamApp(game))
+            .filter((game) => game.isGame !== false && !isExcludedSteamApp(game))
             .sort((a, b) => (Number(b.playtimeMinutes ?? b.hours) || 0) - (Number(a.playtimeMinutes ?? a.hours) || 0))
             .slice(0, 3)
           : [];
         if (!games.length) throw new Error('No recently played games');
-        steamGames.classList.toggle('has-one-game', games.length === 1);
         const maxHours = Math.max(...games.map((game) => Number(game.hours) || 0), .1);
         steamGames.replaceChildren(...games.map((game, index) => {
           const row = document.createElement('a');
-          row.className = 'steam-game';
+          row.className = index === 0 ? 'steam-game steam-game-featured' : 'steam-game';
           row.dataset.gameHours = String(game.hours);
           const appIdFromImage = typeof game.image === 'string'
             ? game.image.match(/\/steam\/apps\/(\d+)\//)?.[1]

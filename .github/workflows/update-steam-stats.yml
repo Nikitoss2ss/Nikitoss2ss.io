@@ -42,7 +42,7 @@ jobs:
             const games = (payload.response.games || [])
               .filter(game => game.appid !== 1814630)
               .sort((a, b) => (b.playtime_2weeks || 0) - (a.playtime_2weeks || 0))
-              .slice(0, 3)
+              .slice(0, 10)
               .map(game => ({
                 name: game.name,
                 hours: Math.round((game.playtime_2weeks / 60) * 10) / 10,

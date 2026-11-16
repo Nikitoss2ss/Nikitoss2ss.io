@@ -7,6 +7,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const chapterRail = document.querySelector('.chapter-rail');
   const mainNav = document.querySelector('.main-nav');
   const mainNavLinks = [...document.querySelectorAll('.main-nav a')];
+  mainNavLinks.filter((link) => link.hash === '#shop').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      const shopScene = document.querySelector('#shop');
+      if (!shopScene) return;
+      if (window.location.hash !== link.hash) window.history.pushState(null, '', link.hash);
+      const scrollOffset = Number.parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      window.scrollTo({
+        top: window.scrollY + shopScene.getBoundingClientRect().top - scrollOffset,
+        behavior: reduceMotion ? 'auto' : 'smooth',
+      });
+      mainNavLinks.forEach((navLink) => navLink.classList.toggle('is-active', navLink === link));
+      mainNav?.style.setProperty('--nav-indicator-x', `${link.offsetLeft}px`);
+      mainNav?.style.setProperty('--nav-indicator-width', `${link.offsetWidth}px`);
+      mainNav?.classList.add('has-active');
+    });
+  });
   const gameFrames = [...document.querySelectorAll('.game-frame')];
   const gameCurrent = document.querySelector('.game-current');
   const siteLoader = document.querySelector('#site-loader');
@@ -127,13 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
     'ЗАТИШНИЙ КУТОЧОК СВІТУ KURON': "A LITTLE CORNER OF KURON'S WORLD",
     'Обери те, що припало до душі: маленький талісман або стікер із твоїм настроєм.': 'Pick something you love: a little talisman or a sticker that feels like you.',
     'Талісман Kuron': "Kuron's little talisman",
-    'З КРИЛАМИ Й ІСКРОЮ': 'WINGS AND A LITTLE SPARK',
     'МАЛЕНЬКИЙ ДРАКОН, ВЕЛИКА ПІДТРИМКА': 'A LITTLE DRAGON, A LOT OF HEART',
     'Стікер із твоїм характером': 'A sticker with your personality',
-    'ГОРТАЙ НАСТРОЇ': 'BROWSE THE MOODS',
     'Обери настрій із прикладів або розкажи, що хочеш намалювати.': 'Pick a mood from the gallery or tell me what you would like me to draw.',
     'Ідею та вільний слот обговоримо в Telegram — без форми й автоматичних замовлень.': 'We can discuss your idea and an open spot on Telegram — no forms or automatic orders.',
     'Обговорити ідею': 'Talk about your idea',
+    'Обговорити фігурку': 'Discuss the figure',
     'ЗА ОДИН СТІКЕР': 'PER STICKER',
     'АНІМАЦІЯ GIF': 'GIF ANIMATION',
     'Знижка 10% при замовленні від 3 стікерів однієї фурсони.': '10% off when ordering 3 or more stickers of the same fursona.',
@@ -260,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('[data-carousel-direction="-1"]')?.setAttribute('aria-label', language === 'en' ? 'Previous example' : 'Попередній приклад');
     document.querySelector('[data-carousel-direction="1"]')?.setAttribute('aria-label', language === 'en' ? 'Next example' : 'Наступний приклад');
     document.querySelector('#shop-sticker-track')?.setAttribute('aria-label', language === 'en' ? 'Sticker examples' : 'Приклади стікерів');
-    document.querySelector('#shop-slots')?.setAttribute('aria-label', language === 'en' ? 'Four commission spots' : 'Чотири віконця для замовлень');
+    document.querySelector('#shop-slots')?.setAttribute('aria-label', language === 'en' ? 'Four commission slots' : 'Чотири commission slots');
     document.querySelector('#shop-figure-image')?.setAttribute('alt', language === 'en' ? 'Kuron acrylic figure' : 'Акрилова фігурка Kuron');
     document.querySelectorAll('.copy-feedback').forEach((feedback) => {
       const copied = feedback.closest('.copied');
@@ -312,9 +328,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let shopData;
   let stickerSamples = [];
   let stickerPageStart = 0;
+  let stickerCarouselTransitioning = false;
   let shopPreviewObserver;
   const stickerTrack = document.querySelector('#shop-sticker-track');
-  const stickerPageSize = 1;
+  const stickerPageSize = 3;
+  const lastStickerPageStart = () => Math.floor(Math.max(0, stickerSamples.length - 1) / stickerPageSize) * stickerPageSize;
   const localizedText = (value) => {
     if (!value || typeof value.uk !== 'string' || typeof value.en !== 'string') {
       throw new Error('Invalid localized shop text');
@@ -330,17 +348,19 @@ document.addEventListener('DOMContentLoaded', () => {
       ? `${String(firstVisible).padStart(2, '0')} — ${String(lastVisible).padStart(2, '0')} / ${String(stickerSamples.length).padStart(2, '0')}`
       : currentLanguage === 'en' ? 'No sticker examples yet' : 'Прикладів поки немає';
     document.querySelectorAll('.shop-carousel-button').forEach((button) => {
-      button.disabled = button.dataset.carouselDirection === '-1'
+      button.disabled = stickerCarouselTransitioning || (button.dataset.carouselDirection === '-1'
         ? stickerPageStart === 0
-        : stickerPageStart >= Math.max(0, stickerSamples.length - stickerPageSize);
+        : stickerPageStart >= lastStickerPageStart());
     });
   };
-  const renderStickerPage = () => {
+  const renderStickerPage = (direction = 0) => {
     if (!stickerTrack) return;
-    stickerPageStart = Math.min(stickerPageStart, Math.max(0, stickerSamples.length - stickerPageSize));
+    stickerPageStart = Math.min(stickerPageStart, lastStickerPageStart());
     stickerTrack.querySelectorAll('video').forEach((video) => {
       shopPreviewObserver?.unobserve(video);
       video.pause();
+      video.removeAttribute('src');
+      video.load();
     });
     stickerTrack.replaceChildren();
     const visibleStickers = stickerSamples.slice(stickerPageStart, stickerPageStart + stickerPageSize);
@@ -348,19 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const sampleIndex = stickerPageStart + pageIndex;
       const card = document.createElement('article');
       card.className = 'shop-sticker-card';
+      if (direction) card.dataset.entering = direction > 0 ? 'next' : 'previous';
       card.setAttribute('role', 'listitem');
-      card.style.animationDelay = `${pageIndex * 80}ms`;
       const preview = document.createElement('div');
       preview.className = 'shop-sticker-preview';
-      const poster = document.createElement('img');
-      poster.className = 'shop-sticker-poster';
-      poster.src = sticker.poster;
-      poster.alt = '';
-      poster.addEventListener('error', () => {
-        preview.dataset.previewError = currentLanguage === 'en' ? 'Poster unavailable' : 'Постер недоступний';
-        card.classList.add('has-preview-error');
-      });
-      preview.append(poster);
       if (sticker.preview) {
         const video = document.createElement('video');
         video.src = sticker.preview;
@@ -393,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
           video.hidden = true;
           preview.dataset.previewError = currentLanguage === 'en' ? 'Animation unavailable' : 'Анімація недоступна';
           card.classList.add('has-preview-error');
-          console.warn(`Could not load sticker animation; showing its poster instead: ${sticker.preview}`);
+          console.warn(`Could not load sticker animation preview: ${sticker.preview}`);
         });
         preview.append(video);
       }
@@ -414,9 +425,22 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   document.querySelectorAll('.shop-carousel-button').forEach((button) => {
     button.addEventListener('click', () => {
-      const lastStart = Math.max(0, stickerSamples.length - stickerPageSize);
-      stickerPageStart = Math.max(0, Math.min(lastStart, stickerPageStart + Number(button.dataset.carouselDirection)));
-      renderStickerPage();
+      if (stickerCarouselTransitioning) return;
+      const direction = Number(button.dataset.carouselDirection);
+      const nextStart = Math.max(0, Math.min(lastStickerPageStart(), stickerPageStart + direction * stickerPageSize));
+      if (nextStart === stickerPageStart) return;
+      stickerCarouselTransitioning = true;
+      updateStickerCarousel();
+      stickerTrack.classList.add(direction > 0 ? 'is-exiting-next' : 'is-exiting-previous');
+      window.setTimeout(() => {
+        stickerTrack.classList.remove('is-exiting-next', 'is-exiting-previous');
+        stickerPageStart = nextStart;
+        renderStickerPage(direction);
+        window.setTimeout(() => {
+          stickerCarouselTransitioning = false;
+          updateStickerCarousel();
+        }, reduceMotion ? 0 : 460);
+      }, reduceMotion ? 0 : 220);
     });
   });
   const renderShop = () => {
@@ -451,6 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isOccupied = occupied.has(slotNumber);
       const slot = document.createElement('div');
       slot.className = `shop-slot ${isOccupied ? 'is-occupied' : 'is-available'}`;
+      slot.style.setProperty('--slot-delay', `${(slotNumber - 1) * 90}ms`);
       slot.setAttribute('aria-label', shopLanguage === 'en'
         ? `Slot ${slotNumber}: ${isOccupied ? 'occupied' : 'available'}`
         : `Слот ${String(slotNumber).padStart(2, '0')}: ${isOccupied ? 'зайнятий' : 'вільний'}`);
@@ -478,11 +503,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const freeSlots = 4 - occupied.size;
     document.querySelector('#shop-slots-summary').textContent = freeSlots
       ? shopLanguage === 'en'
-        ? `${freeSlots} of 4 spots are open — message me on Telegram.`
-        : `Вільно ${freeSlots} із 4 віконець — напиши мені в Telegram.`
+        ? `${freeSlots} of 4 commission slots are open — message me on Telegram.`
+        : `Вільно ${freeSlots} із 4 commission slots — напиши мені в Telegram.`
       : shopLanguage === 'en'
-        ? 'All 4 spots are taken — I cannot take on new ideas right now.'
-        : 'Усі віконця зайняті — поки що не беру нових ідей.';
+        ? 'All 4 commission slots are taken — I cannot take on new ideas right now.'
+        : 'Усі 4 commission slots зайняті — поки що не беру нових ідей.';
     document.querySelector('#shop-discount').textContent = shopLanguage === 'en'
       ? `${shopData.discount.percent}% off when ordering ${shopData.discount.minimumQuantity} or more stickers of the same fursona.`
       : `Знижка ${shopData.discount.percent}% при замовленні від ${shopData.discount.minimumQuantity} стікерів однієї фурсони.`;
@@ -775,14 +800,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageProgress = clamp(window.scrollY / pageRange);
     progressBar?.style.setProperty('--page-progress', String(pageProgress));
     let activeScene = scenes[0];
-    let nearestSceneDistance = Infinity;
+    const navigationThreshold = Math.min(viewportHeight * .36, 280);
     scenes.forEach((scene) => {
       const bounds = scene.getBoundingClientRect();
+      if (bounds.top <= navigationThreshold) activeScene = scene;
       const centerDistance = Math.abs(bounds.top + bounds.height / 2 - viewportHeight / 2);
-      if (centerDistance < nearestSceneDistance) {
-        nearestSceneDistance = centerDistance;
-        activeScene = scene;
-      }
       const sceneProgress = clamp(1 - centerDistance / (viewportHeight * .9));
       scene.style.setProperty('--scene-progress', sceneProgress.toFixed(3));
 
@@ -849,6 +871,10 @@ document.addEventListener('DOMContentLoaded', () => {
     menuToggle?.setAttribute('aria-expanded', 'false');
     menuToggle?.setAttribute('aria-label', languageAttributes[currentLanguage].menuOpen);
     mainNav.classList.remove('is-open');
+    mainNavLinks.forEach((navLink) => navLink.classList.toggle('is-active', navLink === link));
+    mainNav.style.setProperty('--nav-indicator-x', `${link.offsetLeft}px`);
+    mainNav.style.setProperty('--nav-indicator-width', `${link.offsetWidth}px`);
+    mainNav.classList.add('has-active');
   }));
 
   // Only load and play the selected cover video while the music scene is visible.

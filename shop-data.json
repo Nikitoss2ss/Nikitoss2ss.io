@@ -14,7 +14,11 @@
   },
   "stickerPriceUsd": 6.0,
   "gifAddonUsd": 2,
-  "occupiedSlots": [],
+  "occupiedSlots": [
+    1,
+    2,
+    3
+  ],
   "discount": {
     "minimumQuantity": 3,
     "percent": 10

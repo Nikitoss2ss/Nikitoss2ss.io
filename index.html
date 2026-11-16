@@ -30,8 +30,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=5.4" />
-  <script src="script.js?v=5.4" defer></script>
+  <link rel="stylesheet" href="styles.css?v=5.13" />
+  <script src="script.js?v=5.13" defer></script>
   <link rel="icon" href="Icons/Card.png" />
 </head>
 <body class="is-loading">
@@ -59,6 +59,7 @@
       <a href="#favgame">Гра</a>
       <a href="#music">Музика</a>
       <a href="#socials">Контакти</a>
+      <a href="#shop">Крамничка</a>
     </nav>
     <div class="topbar-actions">
       <button class="language-toggle" type="button" aria-label="Switch language to English" title="Switch language to English"><span class="language-toggle-orbit" aria-hidden="true"></span><span class="language-toggle-label">EN</span></button>
@@ -222,12 +223,40 @@
     <section id="shop" class="scene shop-scene" aria-labelledby="shop-title">
       <div class="scene-heading"><span class="scene-number">07</span><span class="scene-kicker">МАЛЕНЬКИЙ ФРАГМЕНТ СВІТУ KURON</span><span class="scene-rule"></span></div>
       <div class="shop-layout">
-        <div class="shop-copy reveal"><p class="eyebrow">MERCH / IN PROGRESS</p><h2 id="shop-title">Крамничка</h2><p class="shop-preview-intro">Особливі речі з Kuron вже тут.</p><p class="shop-order-note">Для замовлення зв'яжіться зі мною.</p></div>
-        <article class="shop-feature reveal">
-          <div class="shop-product-art"><span class="product-index">KURON OBJECT / 001</span><img src="Images/s1.png" alt="Акрилова фігурка Kuron" loading="lazy" decoding="async"><span class="product-spark product-spark-one">✦</span><span class="product-spark product-spark-two">✦</span></div>
-          <div class="shop-feature-caption"><div><h3>Акрилова фігурка Kuron</h3><p>Акрилова фігурка заввишки 15 см із моєю фурсоною Kuron — маленький чорний дракончик, який додасть столу трохи характеру, крил і помаранчевого вогника.</p></div><span class="shop-item-price">250 грн</span></div>
-        </article>
-        <div class="shop-upcoming reveal"><div class="upcoming-item"><span>02</span><div><h3>Щось у процесі</h3><p>Поки що тут живе лише передчуття.</p></div><b>+</b></div><div class="upcoming-item"><span>03</span><div><h3>Сюрприз попереду</h3><p>Ця історія ще тільки починається.</p></div><b>+</b></div></div>
+        <div class="shop-intro reveal">
+          <div class="shop-copy"><p class="eyebrow">ЗАТИШНИЙ КУТОЧОК СВІТУ KURON</p><h2 id="shop-title">Крамничка <span>🛍️</span></h2><p>Обери те, що припало до душі: маленький талісман або стікер із твоїм настроєм.</p></div>
+        </div>
+
+        <section class="shop-merch reveal" aria-labelledby="shop-merch-title">
+          <div class="shop-section-heading"><div><span class="shop-kicker">01 / LITTLE OBJECTS</span><h3 id="shop-merch-title">Талісман Kuron</h3></div><span class="shop-group-count">З КРИЛАМИ Й ІСКРОЮ</span></div>
+          <article class="shop-figure">
+            <div class="shop-figure-art"><span class="product-index">KURON / OBJECT 01</span><img id="shop-figure-image" src="Images/s1.png" alt="Акрилова фігурка Kuron" loading="lazy" decoding="async"><span class="product-spark product-spark-one">✦</span><span class="product-spark product-spark-two">✦</span><span class="product-orbit product-orbit-one"></span><span class="product-orbit product-orbit-two"></span></div>
+            <div class="shop-feature-caption"><div><span class="shop-kicker">МАЛЕНЬКИЙ ДРАКОН, ВЕЛИКА ПІДТРИМКА</span><h4 id="shop-figure-name">Акрилова фігурка Kuron</h4><p id="shop-figure-description">Акрилова фігурка заввишки 15 см із моєю фурсоною Kuron.</p></div><span class="shop-item-price" id="shop-figure-price"></span></div>
+            <p class="shop-stock" id="shop-figure-stock"></p>
+          </article>
+        </section>
+
+        <section class="shop-sticker-orders" aria-labelledby="shop-stickers-title">
+          <div class="shop-section-heading"><div><span class="shop-kicker">02 / DRAWN JUST FOR YOU</span><h3 id="shop-stickers-title">Стікер із твоїм характером</h3></div><span class="shop-group-count">ГОРТАЙ НАСТРОЇ</span></div>
+          <div class="sticker-order-intro">
+            <div><p>Обери настрій із прикладів або розкажи, що хочеш намалювати.</p><p class="shop-order-note">Ідею та вільний слот обговоримо в Telegram — без форми й автоматичних замовлень.</p><a class="shop-contact-link" href="https://t.me/Nikitoss2ssComunity" target="_blank" rel="noopener">Обговорити ідею <span aria-hidden="true">↗</span></a></div>
+            <div class="sticker-pricing">
+              <div><strong id="shop-sticker-price">$6</strong><span>ЗА ОДИН СТІКЕР</span></div>
+              <div><strong id="shop-gif-price">+$2</strong><span>АНІМАЦІЯ GIF</span></div>
+            </div>
+          </div>
+          <div class="shop-benefits"><p id="shop-discount">Від 3 стікерів однієї фурсони — знижка 10%.</p><p>Створення може тривати до місяця — я поєдную замовлення з навчанням та іншими справами.</p></div>
+          <div class="shop-carousel">
+            <div class="shop-carousel-controls"><span id="shop-sticker-counter" aria-live="polite">01 — 12</span><div><button class="shop-carousel-button" type="button" data-carousel-direction="-1" aria-label="Попередній приклад" disabled>←</button><button class="shop-carousel-button" type="button" data-carousel-direction="1" aria-label="Наступний приклад" disabled>→</button></div></div>
+            <div class="shop-sticker-track" id="shop-sticker-track" role="list" aria-label="Приклади стікерів"></div>
+          </div>
+        </section>
+
+        <section class="shop-availability reveal" aria-labelledby="shop-slots-title">
+          <div class="shop-availability-copy"><span class="shop-kicker">03 / THE OPEN WINDOWS</span><h3 id="shop-slots-title">Віконця для замовлень</h3><p id="shop-slots-summary" aria-live="polite">Перевіряю, коли зможу взяти нову ідею…</p></div>
+          <div class="shop-slots" id="shop-slots" aria-label="Чотири слоти для замовлень"></div>
+        </section>
+        <p class="shop-data-status" id="shop-data-status" role="status" aria-live="polite"></p>
       </div>
     </section>
 

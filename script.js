@@ -565,6 +565,10 @@ document.addEventListener('DOMContentLoaded', () => {
         || data.spotifyTracks !== undefined && (!Array.isArray(data.spotifyTracks)
           || data.spotifyTracks.length !== 3
           || data.spotifyTracks.some((track) => typeof track !== 'string' || !/^[A-Za-z0-9]{22}$/.test(track)))
+        || data.musicCovers !== undefined && (!data.musicCovers || typeof data.musicCovers !== 'object'
+          || data.musicCovers.image !== undefined && !/^Images\/cover\.(?:jpe?g|png)$/.test(data.musicCovers.image)
+          || data.musicCovers.landscape !== undefined && !/^Images\/cover1\.(?:gif|jpe?g|mp4|png|webm|webp)$/.test(data.musicCovers.landscape)
+          || data.musicCovers.portrait !== undefined && !/^Images\/cover2\.(?:gif|jpe?g|mp4|png|webm|webp)$/.test(data.musicCovers.portrait))
         || !Array.isArray(data.stickers) || !Array.isArray(data.otherStickers)) {
         throw new Error('Shop data has an invalid format');
       }
@@ -592,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
         : 'Не вдалося завантажити дані крамнички. Спробуй пізніше.';
     }
   };
-  loadShopData();
+  const shopDataReady = loadShopData();
   languageToggle?.addEventListener('click', () => {
     if (languageToggle.classList.contains('is-switching')) return;
     languageToggle.classList.add('is-switching');
@@ -707,12 +711,25 @@ document.addEventListener('DOMContentLoaded', () => {
   heroAvatarReady.then(() => setLoadingStage(58, 'Готую персонажа...'));
 
   const coverExtensions = ['.mp4', '.webm', '.webp', '.jpg', '.jpeg', '.png', '.gif'];
+  const coverImageExtensions = ['.jpg', '.jpeg', '.png'];
   const portraitCoverQuery = window.matchMedia('(orientation: portrait)');
-  const coverAssetsReady = Promise.all([
-    findAsset('Images/cover1', coverExtensions),
-    findAsset('Images/cover2', coverExtensions)
-  ]).then(([coverOne, coverTwo]) => {
-    const fallback = 'Images/cover.jpg';
+  const coverAssetsReady = shopDataReady.then(async () => {
+    const covers = shopData?.musicCovers;
+    const findConfiguredCover = async (path, base, extensions) => {
+      if (path) {
+        const configured = await fileExists(path);
+        if (configured) return configured;
+      }
+      return findAsset(base, extensions);
+    };
+    const [coverFallback, coverOne, coverTwo] = await Promise.all([
+      findConfiguredCover(covers?.image, 'Images/cover', coverImageExtensions),
+      findConfiguredCover(covers?.landscape, 'Images/cover1', coverExtensions),
+      findConfiguredCover(covers?.portrait, 'Images/cover2', coverExtensions)
+    ]);
+    const fallback = coverFallback || 'Images/cover.jpg';
+    if (musicFilm) musicFilm.poster = fallback;
+    if (musicScene) musicScene.dataset.coverFallback = fallback;
     const applyCover = () => {
       const preferred = portraitCoverQuery.matches ? (coverTwo || coverOne) : (coverOne || coverTwo);
       const selected = reduceMotion && preferred && /\.(mp4|webm)$/i.test(preferred) ? fallback : (preferred || fallback);
@@ -924,10 +941,11 @@ document.addEventListener('DOMContentLoaded', () => {
     musicFilm.addEventListener('playing', () => musicScene.classList.add('video-ready'));
     musicFilm.addEventListener('error', () => {
       if (musicScene.dataset.coverKind !== 'video') return;
+      const fallback = musicScene.dataset.coverFallback || 'Images/cover.jpg';
       musicFilm.pause();
       musicScene.classList.remove('video-ready');
       musicScene.dataset.coverKind = 'image';
-      musicScene.style.setProperty('--music-cover-image', 'url("Images/cover.jpg")');
+      musicScene.style.setProperty('--music-cover-image', `url("${fallback}")`);
       musicScene.classList.add('has-cover-image');
       filmRequested = false;
     });

@@ -325,6 +325,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   applyLanguage(currentLanguage);
   const shopDataStatus = document.querySelector('#shop-data-status');
+  const defaultSpotifyTracks = [
+    '3DbBCR0XKCTorWj4GXfsnN',
+    '46T3bl93hAhSwOz7nlLRSx',
+    '5oZ9avBrfVtNmYQCkhGgPQ'
+  ];
   let shopData;
   let stickerSamples = [];
   let stickerPageStart = 0;
@@ -333,6 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const stickerTrack = document.querySelector('#shop-sticker-track');
   const stickerPageSize = 3;
   const lastStickerPageStart = () => Math.floor(Math.max(0, stickerSamples.length - 1) / stickerPageSize) * stickerPageSize;
+  let renderedSpotifyTracks = [];
   const localizedText = (value) => {
     if (!value || typeof value.uk !== 'string' || typeof value.en !== 'string') {
       throw new Error('Invalid localized shop text');
@@ -340,6 +346,35 @@ document.addEventListener('DOMContentLoaded', () => {
     return value[currentLanguage];
   };
   const formatDollars = (value) => `$${Number(value.toFixed(2))}`;
+  const renderSpotifyTracks = (tracks) => {
+    const container = document.querySelector('#music-content');
+    if (!container) return;
+    if (tracks.length === renderedSpotifyTracks.length
+      && tracks.every((trackId, index) => trackId === renderedSpotifyTracks[index])) {
+      container.querySelectorAll('iframe').forEach((frame, index) => {
+        frame.title = currentLanguage === 'en'
+          ? `Spotify top track ${index + 1}`
+          : `Пісня №${index + 1} у Spotify`;
+      });
+      return;
+    }
+    container.replaceChildren();
+    tracks.forEach((trackId, index) => {
+      const frame = document.createElement('iframe');
+      frame.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator`;
+      frame.width = '100%';
+      frame.height = index === 0 ? '352' : '152';
+      frame.setAttribute('frameborder', '0');
+      frame.setAttribute('allowfullscreen', '');
+      frame.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture');
+      frame.setAttribute('loading', 'lazy');
+      frame.title = currentLanguage === 'en'
+        ? `Spotify top track ${index + 1}`
+        : `Пісня №${index + 1} у Spotify`;
+      container.append(frame);
+    });
+    renderedSpotifyTracks = [...tracks];
+  };
   const updateStickerCarousel = () => {
     if (!stickerTrack) return;
     const firstVisible = stickerSamples.length ? stickerPageStart + 1 : 0;
@@ -466,6 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
       : shopLanguage === 'en' ? `In stock: ${figure.stock}` : `На складі: ${figure.stock} шт.`;
     document.querySelector('#shop-sticker-price').textContent = formatDollars(shopData.stickerPriceUsd);
     document.querySelector('#shop-gif-price').textContent = `+${formatDollars(shopData.gifAddonUsd)}`;
+    renderSpotifyTracks(shopData.spotifyTracks || defaultSpotifyTracks);
     renderStickerPage();
 
     const occupied = new Set(shopData.occupiedSlots);
@@ -526,6 +562,9 @@ document.addEventListener('DOMContentLoaded', () => {
         || new Set(data.occupiedSlots).size !== data.occupiedSlots.length
         || !Number.isInteger(data.discount?.minimumQuantity) || data.discount.minimumQuantity < 1
         || !Number.isFinite(data.discount?.percent) || data.discount.percent < 0
+        || data.spotifyTracks !== undefined && (!Array.isArray(data.spotifyTracks)
+          || data.spotifyTracks.length !== 3
+          || data.spotifyTracks.some((track) => typeof track !== 'string' || !/^[A-Za-z0-9]{22}$/.test(track)))
         || !Array.isArray(data.stickers) || !Array.isArray(data.otherStickers)) {
         throw new Error('Shop data has an invalid format');
       }
@@ -633,14 +672,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const fallbackImage = heroAvatar?.dataset.fallback || 'Images/avatar.png';
     const showStill = async () => {
       heroArt?.classList.remove('avatar-is-video');
-      if (heroAvatar && !heroAvatar.hasAttribute('src')) {
-        heroAvatar.setAttribute('fetchpriority', 'high');
-        heroAvatar.src = fallbackImage;
-      }
+      heroAvatarVideo?.pause();
+      heroAvatarVideo?.removeAttribute('src');
+      heroAvatarVideo?.load();
       await waitForImage(heroAvatar);
     };
+    if (heroAvatar && !heroAvatar.hasAttribute('src')) {
+      heroAvatar.setAttribute('fetchpriority', 'high');
+      heroAvatar.src = fallbackImage;
+    }
     if (reduceMotion || !heroAvatarVideo) return showStill();
-    const avatarMovie = await findAsset('Images/avatar', ['.mp4', '.webm']);
+    const avatarMovie = await fileExists('Images/avatar.webm');
     if (!avatarMovie) return showStill();
     await new Promise((resolve) => {
       let resolved = false;

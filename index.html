@@ -30,8 +30,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=5.17" />
-  <script src="script.js?v=5.17" defer></script>
+  <link rel="stylesheet" href="styles.css?v=5.20" />
+  <script src="script.js?v=5.20" defer></script>
   <link rel="icon" href="Icons/Card.png" />
 </head>
 <body class="is-loading">
@@ -98,7 +98,7 @@
         <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
         <div class="hero-crosshair crosshair-one"></div><div class="hero-crosshair crosshair-two"></div>
         <div class="hero-art-index">KURON / 01</div>
-        <video class="hero-avatar-video" muted autoplay loop playsinline preload="none" aria-hidden="true"></video>
+        <video class="hero-avatar-video" muted autoplay loop playsinline preload="none" poster="Images/avatar.png" aria-hidden="true"></video>
         <img data-fallback="Images/avatar.png" alt="" class="hero-avatar" decoding="async" width="640" height="640">
         <video class="sticker-float sticker-joy" data-sticker="Stickers/enjoyed_converted.webm" muted loop playsinline preload="none" aria-hidden="true"></video>
         <video class="sticker-float sticker-smirk" data-sticker="Stickers/smirking%20face_converted.webm" muted loop playsinline preload="none" aria-hidden="true"></video>
@@ -194,13 +194,7 @@
       <div class="scene-heading"><span class="scene-number">05</span><span class="scene-kicker">САУНДТРЕК ЦЬОГО ПРОСТОРУ</span><span class="scene-rule"></span></div>
       <div class="music-layout">
         <div class="music-intro reveal"><p class="eyebrow">NOW PLAYING / PERSONAL SELECTION</p><h2 id="music-title">Мій топ<br>пісень <span>🎧</span></h2><div class="soundwave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
-        <div id="music-content" class="spotify-embeds"><!-- Встав сюди iframe embed-код зі Spotify. -->
-<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/3DbBCR0XKCTorWj4GXfsnN?utm_source=generator&si=273ff3952c514b1f" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/46T3bl93hAhSwOz7nlLRSx?utm_source=generator&si=348ac85bf9474929" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/5oZ9avBrfVtNmYQCkhGgPQ?utm_source=generator&si=aa569efc49eb41d3" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-
-
-        </div>
+        <div id="music-content" class="spotify-embeds" aria-label="Топ три пісні"></div>
       </div>
     </section>
 

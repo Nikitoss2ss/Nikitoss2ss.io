@@ -14,7 +14,11 @@
   },
   "stickerPriceUsd": 6,
   "gifAddonUsd": 2,
-  "occupiedSlots": [],
+  "occupiedSlots": [
+    1,
+    2,
+    3
+  ],
   "spotifyTracks": [
     "3DbBCR0XKCTorWj4GXfsnN",
     "46T3bl93hAhSwOz7nlLRSx",
@@ -26,67 +30,100 @@
   },
   "stickers": [
     {
-      "title": { "uk": "67", "en": "67" },
+      "title": {
+        "uk": "67",
+        "en": "67"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/67_converted.webm",
       "poster": "Stickers/previews/67.png"
     },
     {
-      "title": { "uk": "Чухаю підборіддя", "en": "Chin scratch" },
+      "title": {
+        "uk": "Чухаю підборіддя",
+        "en": "Chin scratch"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/chin scratch_converted.webm",
       "poster": "Stickers/previews/chin-scratch.png"
     },
     {
-      "title": { "uk": "Плачу", "en": "Crying" },
+      "title": {
+        "uk": "Плачу",
+        "en": "Crying"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/cry_converted.webm",
       "poster": "Stickers/previews/cry.png"
     },
     {
-      "title": { "uk": "Незадоволений", "en": "Dissatisfied" },
+      "title": {
+        "uk": "Незадоволений",
+        "en": "Dissatisfied"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/dissatisfied_converted.webm",
       "poster": "Stickers/previews/dissatisfied.png"
     },
     {
-      "title": { "uk": "Радію", "en": "So happy" },
+      "title": {
+        "uk": "Радію",
+        "en": "So happy"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/enjoyed_converted.webm",
       "poster": "Stickers/previews/enjoyed.png"
     },
     {
-      "title": { "uk": "Низький кортизол · варіант", "en": "Low cortisol · alt" },
+      "title": {
+        "uk": "Низький кортизол · варіант",
+        "en": "Low cortisol · alt"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/low cortisol_converted.webm",
       "poster": "Stickers/previews/low-cortisol-original.png"
     },
     {
-      "title": { "uk": "Шукаю", "en": "Searching" },
+      "title": {
+        "uk": "Шукаю",
+        "en": "Searching"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/search_converted.webm",
       "poster": "Stickers/previews/search.png"
     },
     {
-      "title": { "uk": "Соромлюся", "en": "Shy" },
+      "title": {
+        "uk": "Соромлюся",
+        "en": "Shy"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/shy_converted.webm",
       "poster": "Stickers/previews/shy.png"
     },
     {
-      "title": { "uk": "Смішинка", "en": "Silly mood" },
+      "title": {
+        "uk": "Смішинка",
+        "en": "Silly mood"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/silly_converted.webm",
       "poster": "Stickers/previews/silly.png"
     },
     {
-      "title": { "uk": "Хитра усмішка", "en": "Smirking" },
+      "title": {
+        "uk": "Хитра усмішка",
+        "en": "Smirking"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/smirking face_converted.webm",
       "poster": "Stickers/previews/smirking.png"
     },
     {
-      "title": { "uk": "Задумався", "en": "Thinking" },
+      "title": {
+        "uk": "Задумався",
+        "en": "Thinking"
+      },
       "fursona": "Kuron",
       "preview": "Stickers/thinking_converted.webm",
       "poster": "Stickers/previews/thinking.png"

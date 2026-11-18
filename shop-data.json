@@ -13,7 +13,7 @@
     "stock": null
   },
   "stickerPriceUsd": 6,
-  "gifAddonUsd": 2,
+  "gifAddonUsd": 2.0,
   "occupiedSlots": [
     1,
     2,

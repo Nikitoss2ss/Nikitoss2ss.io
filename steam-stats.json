@@ -1,20 +1,25 @@
 {
-  "updatedAt": "2026-11-18T12:58:38.357Z",
+  "updatedAt": "2026-11-18T21:23:08.976Z",
   "games": [
+    {
+      "name": "VRChat",
+      "hours": 3,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/438100/capsule_231x87.jpg"
+    },
     {
       "name": "SteamVR",
       "hours": 2.3,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
     },
     {
-      "name": "VRChat",
-      "hours": 2.2,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/438100/capsule_231x87.jpg"
-    },
-    {
       "name": "Wallpaper Engine",
       "hours": 1.6,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
+    },
+    {
+      "name": "Factorio",
+      "hours": 1.6,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
       "name": "Carnal After Dark™ Demo",
@@ -25,11 +30,6 @@
       "name": "Drag'n Wash",
       "hours": 1.2,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4739660/capsule_231x87.jpg"
-    },
-    {
-      "name": "Factorio",
-      "hours": 1.2,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
       "name": "Neighbors: Suburban Warfare",

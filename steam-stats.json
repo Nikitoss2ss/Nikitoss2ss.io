@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-18T03:41:22.862Z",
+  "updatedAt": "2026-11-18T12:58:38.357Z",
   "games": [
     {
       "name": "SteamVR",
@@ -27,6 +27,11 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4739660/capsule_231x87.jpg"
     },
     {
+      "name": "Factorio",
+      "hours": 1.2,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
+    },
+    {
       "name": "Neighbors: Suburban Warfare",
       "hours": 0.7,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/1732430/capsule_231x87.jpg"
@@ -35,11 +40,6 @@
       "name": "Get Packed",
       "hours": 0.3,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/269850/capsule_231x87.jpg"
-    },
-    {
-      "name": "Factorio",
-      "hours": 0.1,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
       "name": "The Midnight Walk",

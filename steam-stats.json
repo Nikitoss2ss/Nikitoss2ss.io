@@ -1,6 +1,11 @@
 {
-  "updatedAt": "2026-11-19T03:20:22.810Z",
+  "updatedAt": "2026-11-19T12:56:59.592Z",
   "games": [
+    {
+      "name": "Factorio",
+      "hours": 4,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
+    },
     {
       "name": "VRChat",
       "hours": 3,
@@ -15,11 +20,6 @@
       "name": "Wallpaper Engine",
       "hours": 1.6,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
-    },
-    {
-      "name": "Factorio",
-      "hours": 1.6,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
       "name": "Carnal After Dark™ Demo",

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-21T17:26:12.849Z",
+  "updatedAt": "2026-11-21T23:09:22.659Z",
   "games": [
     {
       "name": "Factorio",
@@ -22,14 +22,14 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4554680/capsule_231x87.jpg"
     },
     {
+      "name": "Wallpaper Engine",
+      "hours": 1,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
+    },
+    {
       "name": "Neighbors: Suburban Warfare",
       "hours": 0.7,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/1732430/capsule_231x87.jpg"
-    },
-    {
-      "name": "Wallpaper Engine",
-      "hours": 0.7,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
     },
     {
       "name": "Get Packed",

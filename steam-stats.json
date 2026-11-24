@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-23T20:07:46.282Z",
+  "updatedAt": "2026-11-24T04:44:03.416Z",
   "games": [
     {
       "name": "Factorio",
@@ -30,6 +30,11 @@
       "name": "Neighbors: Suburban Warfare",
       "hours": 0.7,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/1732430/capsule_231x87.jpg"
+    },
+    {
+      "name": "Psst! Demo",
+      "hours": 0.4,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/5342980/capsule_231x87.jpg"
     },
     {
       "name": "Get Packed",

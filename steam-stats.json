@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-24T04:44:03.416Z",
+  "updatedAt": "2026-11-24T15:48:45.776Z",
   "games": [
     {
       "name": "Factorio",
@@ -40,11 +40,6 @@
       "name": "Get Packed",
       "hours": 0.3,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/269850/capsule_231x87.jpg"
-    },
-    {
-      "name": "The Midnight Walk",
-      "hours": 0,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/2863640/capsule_231x87.jpg"
     }
   ]
 }

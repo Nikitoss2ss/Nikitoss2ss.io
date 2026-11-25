@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-11-24T15:48:45.776Z",
+  "updatedAt": "2026-11-25T00:38:23.767Z",
   "games": [
     {
       "name": "Factorio",
-      "hours": 6.9,
+      "hours": 6.8,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
     },
     {
@@ -32,14 +32,19 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/1732430/capsule_231x87.jpg"
     },
     {
+      "name": "R.E.P.O.",
+      "hours": 0.7,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/3241660/capsule_231x87.jpg"
+    },
+    {
+      "name": "Soundpad Demo",
+      "hours": 0.5,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/632810/capsule_231x87.jpg"
+    },
+    {
       "name": "Psst! Demo",
       "hours": 0.4,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/5342980/capsule_231x87.jpg"
-    },
-    {
-      "name": "Get Packed",
-      "hours": 0.3,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/269850/capsule_231x87.jpg"
     }
   ]
 }

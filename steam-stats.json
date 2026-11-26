@@ -1,20 +1,10 @@
 {
-  "updatedAt": "2026-11-26T12:20:06.901Z",
+  "updatedAt": "2026-11-26T22:17:14.085Z",
   "games": [
     {
       "name": "Factorio",
-      "hours": 6.8,
+      "hours": 7.8,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/427520/capsule_231x87.jpg"
-    },
-    {
-      "name": "VRChat",
-      "hours": 3,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/438100/capsule_231x87.jpg"
-    },
-    {
-      "name": "SteamVR",
-      "hours": 2.3,
-      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
     },
     {
       "name": "R.E.P.O.",
@@ -27,9 +17,19 @@
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/4554680/capsule_231x87.jpg"
     },
     {
+      "name": "SteamVR",
+      "hours": 1.4,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/250820/capsule_231x87.jpg"
+    },
+    {
       "name": "Wallpaper Engine",
       "hours": 1,
       "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/431960/capsule_231x87.jpg"
+    },
+    {
+      "name": "VRChat",
+      "hours": 0.9,
+      "image": "https://cdn.cloudflare.steamstatic.com/steam/apps/438100/capsule_231x87.jpg"
     },
     {
       "name": "Neighbors: Suburban Warfare",

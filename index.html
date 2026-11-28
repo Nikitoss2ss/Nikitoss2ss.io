@@ -30,8 +30,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=5.20" />
-  <script src="script.js?v=5.22" defer></script>
+  <link rel="stylesheet" href="styles.css?v=5.25" />
+  <script src="script.js?v=5.30" defer></script>
   <link rel="icon" href="Icons/Card.png" />
 </head>
 <body class="is-loading">
@@ -50,7 +50,15 @@
   <div class="ambient-orbs" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="scroll-progress" aria-hidden="true"><span></span></div>
   <div class="pointer-aura" aria-hidden="true"></div>
-
+  <div class="festive-garland" aria-hidden="true">
+    <div class="festive-garland-wire"></div>
+    <span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span><span class="festive-bulb"></span>
+  </div>
+  <div class="festive-snow" id="festive-snow" aria-hidden="true">
+    <div class="festive-snow-layer" data-depth="0.2"></div>
+    <div class="festive-snow-layer" data-depth="0.11"></div>
+    <div class="festive-snow-layer" data-depth="0.04"></div>
+  </div>
   <header class="topbar">
     <a class="wordmark" href="#top" aria-label="Nikitoss2ss and Kuron — back to top"><span class="wordmark-name wordmark-name-nikitoss">Nikitoss2ss</span><span class="wordmark-cross">×</span><span class="wordmark-name wordmark-name-kuron">Kuron</span><span class="wordmark-dot">.</span></a>
     <nav class="main-nav" aria-label="Навігація сторінкою">
@@ -62,6 +70,7 @@
       <a href="#shop">Крамничка</a>
     </nav>
     <div class="topbar-actions">
+      <button class="festive-toggle" type="button" aria-label="Вимкнути новорічні ефекти" aria-pressed="true" title="Вимкнути новорічні ефекти"><span class="festive-toggle-icon" aria-hidden="true">❄</span></button>
       <button class="language-toggle" type="button" aria-label="Switch language to English" title="Switch language to English"><span class="language-toggle-orbit" aria-hidden="true"></span><span class="language-toggle-label">EN</span></button>
       <a class="topbar-cta" href="#socials"><span>Знайти мене</span><span aria-hidden="true">↗</span></a>
     </div>
@@ -111,30 +120,34 @@
       <div class="about-layout">
         <div class="about-main reveal">
           <h2 id="about-title">Про мене <span>🧑‍💻</span></h2>
-          <p class="about-intro">Мене звати <strong>Нікіта</strong>, мені <strong>17</strong> років (день народження — <strong>5 січня</strong>), проживаю на західній Україні. Я високий, худий, веселий і трохи сором'язливий, але дуже люблю спілкування — особливо з тими, хто теж в темі фуррі чи ігор.</p>
+          <p class="about-intro" id="about-intro">Привіт! Я <strong>Нікіта</strong>, мені <strong id="about-age">17</strong> років, відомий в інтернеті як <strong>Nikitoss2ss</strong>, або просто <strong>Kuron</strong>! Я із заходу України. За характером я досить допитливий, люблю експериментувати з технікою, відкривати для себе щось нове і, звісно ж, пити чай! 🍵</p>
+          <p class="about-extra" id="about-extra">Якщо вірити моїм друзям, я «цікавий, приємний, забавний та смішний». Сам я доволі сором'язливий, особливо під час першого знайомства, але з часом освоююся і стаю набагато відкритішим. Я також дуже прив'язуюсь до людей.</p>
+          <p class="about-extra" id="about-extra-games">До речі, я дуже люблю грати в компанії! Самостійно запускаю ігри не так часто, адже набагато цікавіше розділяти пригоди з кимось іншим.</p>
+          <p class="about-extra" id="about-extra-furry">І ще один важливий факт: я просто обожнюю фуррі-тематику! Настільки, що навіть маю власну фурсону. 🐉</p>
           <div class="interests-block">
             <h3>Чим цікавлюсь <span>✨</span></h3>
             <ul class="interest-list">
-              <li><span>01</span>Програмування та IT</li>
-              <li><span>02</span>Техніка — люблю розбирати гаджети</li>
-              <li><span>03</span>3D-моделювання та анімація</li>
-              <li><span>04</span>Веду прямі трансляції й веду YouTube (ліниво, але впевнено)</li>
-              <li><span>05</span>Граю: Roblox, Minecraft, Fortnite, ZZZ та багато іншого</li>
-              <li><span>06</span>VR — Oculus Quest / Meta Quest</li>
-              <li><span>07</span>Малювання та створення артів</li>
+              <li><span>01</span><div><strong>💻 IT та програмування</strong> — розробка власних проєктів, експерименти з кодом та використання ШІ як помічника у програмуванні.</div></li>
+              <li><span>02</span><div><strong>🔧 Техніка та електроніка</strong> — комп'ютери, комплектуючі, розбирання, обслуговування та ремонт різноманітних пристроїв.</div></li>
+              <li><span>03</span><div><strong>🎨 Малювання</strong> — іноді створюю власні малюнки та цифрові арти.</div></li>
+              <li><span>04</span><div><strong>📺 YouTube</strong> — веду власний канал та займаюся створенням контенту.</div></li>
+              <li><span>05</span><div><strong>🎮 Відеоігри</strong> — люблю різноманітні жанри та ігри на кшталт Fortnite, Factorio, Roblox і Minecraft.</div></li>
+              <li><span>06</span><div><strong>🎬 Анімація та творчість</strong> — вивчаю 2D- і 3D-анімацію, створюю стікери та експериментую з різними форматами контенту.</div></li>
             </ul>
           </div>
-          <p class="about-signature">Мій нікнейм всюди — <strong><span class="copiable-name" tabindex="0"><span class="name-text">Nikitoss2ss</span><span class="copy-icons"></span><span class="copy-feedback">Скопійовано</span></span></strong>. Люблю мультиплеєр і знайомства в іграх — шукаю нових фуррі друзів 😺</p>
         </div>
         <aside class="facts-field reveal">
           <video class="sticker-float sticker-think" data-sticker="Stickers/thinking_converted.webm" muted loop playsinline preload="none" aria-hidden="true"></video>
           <span class="facts-index">N° 01 — QUICK FACTS</span>
           <h3>Факти</h3>
           <ul>
-            <li><span>01</span><div>Улюблені кольори: <strong>червоний та помаранчевий ❤️🧡</strong></div></li>
-            <li><span>02</span><div>Платформи: <strong>ПК, Xbox, VR</strong></div></li>
-            <li><span>03</span><div>Фурсона: <strong>Kuron</strong> — кемоно дракончик</div></li>
-            <li><span>04</span><div>Стиль — <strong>гумор, меми, ігри</strong></div></li>
+            <li><span>01</span><div>🎨 Улюблені кольори — <strong>червоний та помаранчевий</strong>.</div></li>
+            <li><span>02</span><div>🎂 День народження — <strong>5 січня</strong>.</div></li>
+            <li><span>03</span><div>🌐 Мій основний нікнейм — <strong>Nikitoss2ss</strong>.</div></li>
+            <li><span>04</span><div>🖥️ Основні платформи — <strong>PC та VR</strong>.</div></li>
+            <li><span>05</span><div>🍵 <strong>ОБОЖНЮЮ ЧАЙ!</strong> Мабуть, це вже окрема частина моєї особистості.</div></li>
+            <li><span>06</span><div>🎮 Люблю різноманітні жанри відеоігор, але <strong>шутери — точно не моє!</strong></div></li>
+            <li><span>07</span><div>🎧 Мій улюблений музичний напрямок — <strong>Electronic Dance Music (EDM)</strong>.</div></li>
           </ul>
           <div class="facts-mark" aria-hidden="true">K<span>.</span></div>
         </aside>
@@ -201,7 +214,7 @@
     <section id="socials" class="scene socials-scene" aria-labelledby="socials-title">
       <div class="scene-heading"><span class="scene-number">06</span><span class="scene-kicker">ЗАЛИШАЙМОСЬ НА ЗВ'ЯЗКУ</span><span class="scene-rule"></span></div>
       <div class="socials-layout">
-        <div class="socials-lead reveal"><p class="eyebrow">THE INTERNET IS A SMALL PLACE</p><h2 id="socials-title">Зацікавився?<br>Приєднуйся!</h2><p>Нікнейм всюди — <strong><span class="copiable-name" tabindex="0"><span class="name-text rainbow-text">Nikitoss2ss</span><span class="copy-icons"><img src="Icons/telegram.png" alt="tg"><img src="Icons/discord.png" alt="dc"><img src="Icons/youtube.png" alt="yt"><img src="Icons/tiktok.png" alt="tt"><img src="Icons/xbox.png" alt="xb"><img src="Icons/steam.png" alt="st"></span><span class="copy-feedback">Скопійовано!</span></span></strong></p></div>
+        <div class="socials-lead reveal"><p class="eyebrow">THE INTERNET IS A SMALL PLACE</p><h2 id="socials-title">Знайди мене<br>в мережі!</h2><p>Мій нікнейм всюди — <strong><span class="copiable-name" tabindex="0"><span class="name-text rainbow-text">Nikitoss2ss</span><span class="copy-icons"><img src="Icons/telegram.png" alt="tg"><img src="Icons/discord.png" alt="dc"><img src="Icons/youtube.png" alt="yt"><img src="Icons/tiktok.png" alt="tt"><img src="Icons/xbox.png" alt="xb"><img src="Icons/steam.png" alt="st"></span><span class="copy-feedback">Скопійовано!</span></span></strong></p></div>
         <div class="social-list reveal">
           <a href="https://t.me/Nikitoss2ssComunity" target="_blank" rel="noopener"><span class="social-icon"><img src="Icons/telegram.png" alt=""></span><span>Telegram</span><span class="social-handle">@Nikitoss2ssComunity</span><b>↗</b></a>
           <a href="https://discord.gg/yYabRQH4cn" target="_blank" rel="noopener"><span class="social-icon"><img src="Icons/discord.png" alt=""></span><span>Discord</span><span class="social-handle">Приєднатися до сервера</span><b>↗</b></a>
@@ -251,8 +264,8 @@
         </section>
 
         <section class="shop-availability reveal" aria-labelledby="shop-slots-title">
-          <div class="shop-availability-copy"><span class="shop-kicker">03 / COMMISSION SLOTS</span><h3 id="shop-slots-title">Commission Slots</h3><p id="shop-slots-summary" aria-live="polite">Перевіряю, коли зможу взяти нову ідею…</p></div>
-          <div class="shop-slots" id="shop-slots" aria-label="Чотири commission slots"></div>
+          <div class="shop-availability-copy"><span class="shop-kicker">03 / КОМІШКИ</span><h3 id="shop-slots-title">Комішки</h3><p id="shop-slots-summary" aria-live="polite">Перевіряю, коли зможу взяти нову ідею…</p></div>
+          <div class="shop-slots" id="shop-slots" aria-label="Чотири комішки"></div>
         </section>
         <p class="shop-data-status" id="shop-data-status" role="status" aria-live="polite"></p>
       </div>
@@ -267,7 +280,7 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-mark" href="#top" aria-label="Nikitoss2ss and Kuron — back to top"><span class="wordmark-name wordmark-name-nikitoss">Nikitoss2ss</span><span class="wordmark-cross">×</span><span class="wordmark-name wordmark-name-kuron">Kuron</span><span class="wordmark-dot">.</span></a><p>© <span id="year"></span> <span class="copiable-name" tabindex="0"><span class="name-text">Nikitoss2ss</span><span class="copy-icons"></span><span class="copy-feedback">Скопійовано</span></span> — всі права (майже) належать мені 😉</p><p class="site-version">v 2.2 · Оновлено: 16.11.2026</p><a href="#top" class="footer-top">НАГОРУ ↑</a></footer>
+  <footer class="site-footer"><a class="footer-mark" href="#top" aria-label="Nikitoss2ss and Kuron — back to top"><span class="wordmark-name wordmark-name-nikitoss">Nikitoss2ss</span><span class="wordmark-cross">×</span><span class="wordmark-name wordmark-name-kuron">Kuron</span><span class="wordmark-dot">.</span></a><p>© <span id="year"></span> <span class="copiable-name" tabindex="0"><span class="name-text">Nikitoss2ss</span><span class="copy-icons"></span><span class="copy-feedback">Скопійовано</span></span> — всі права (майже) належать мені 😉</p><p class="site-version">v 2.4_ChristmasEdition  · Оновлено: 28.11.2026</p><a href="#top" class="footer-top">НАГОРУ ↑</a></footer>
   <button class="back-to-top" type="button" aria-label="Повернутися нагору" title="Повернутися нагору">↑</button>
 </body>
 </html>

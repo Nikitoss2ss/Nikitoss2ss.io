@@ -1,6 +1,75 @@
 // Interactions for the presentation style portfolio.
 document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const festiveToggle = document.querySelector('.festive-toggle');
+  const festiveSnow = document.querySelector('#festive-snow');
+  let festiveEnabled = true;
+  try {
+    festiveEnabled = localStorage.getItem('festive-mode') !== 'off';
+  } catch (error) {
+    console.warn(`Could not read the festive mode preference: ${error.message}`);
+  }
+  const festiveSnowLayers = [...(festiveSnow?.querySelectorAll('.festive-snow-layer') || [])];
+  if (festiveSnowLayers.some((layer) => layer.childElementCount === 0)) {
+    festiveSnowLayers.forEach((layer, layerIndex) => {
+      const flakeCount = reduceMotion ? 8 : [34, 24, 16][layerIndex];
+      for (let index = 0; index < flakeCount; index += 1) {
+        const flake = document.createElement('span');
+        const isCrystal = layerIndex === 2;
+        flake.className = isCrystal ? 'festive-flake festive-flake-crystal' : 'festive-flake';
+        if (isCrystal) flake.textContent = '❄';
+        flake.style.setProperty('--flake-left', `${(index * 37 + layerIndex * 19 + 11) % 100}%`);
+        flake.style.setProperty('--flake-top', `${(index * 41 + layerIndex * 23) % 100}%`);
+        flake.style.setProperty('--flake-size', `${[2 + (index % 4), 4 + (index % 5), 7 + (index % 7)][layerIndex]}px`);
+        flake.style.setProperty('--flake-opacity', `${[0.15 + (index % 5) * 0.045, 0.3 + (index % 6) * 0.075, 0.5 + (index % 5) * 0.09][layerIndex]}`);
+        flake.style.setProperty('--flake-duration', `${[13 + (index % 8) * 1.3, 10 + (index % 8) * 1.15, 8 + (index % 7) * 1.1][layerIndex]}s`);
+        flake.style.setProperty('--flake-delay', `${-(index % 18) * 0.72}s`);
+        flake.style.setProperty('--drift', `${18 + (index % 6) * 12}px`);
+        layer.append(flake);
+      }
+    });
+  }
+  document.querySelectorAll('main > .scene').forEach((scene, sceneIndex) => {
+    if (scene.querySelector('.festive-scene-decor')) return;
+    const decor = document.createElement('div');
+    decor.className = 'festive-scene-decor';
+    decor.setAttribute('aria-hidden', 'true');
+    decor.innerHTML = '<div class="festive-scene-wire"></div><span class="festive-scene-bulb"></span><span class="festive-scene-bulb"></span><span class="festive-scene-bulb"></span><span class="festive-scene-bulb"></span><span class="festive-scene-bulb"></span><span class="festive-scene-bulb"></span><span class="festive-scene-bulb"></span><span class="festive-scene-ornament"></span><span class="festive-scene-ornament"></span><span class="festive-scene-crystal">❄</span><span class="festive-scene-crystal"></span>';
+    decor.style.setProperty('--scene-garland-offset', `${sceneIndex % 2 ? 63 : 8}%`);
+    decor.style.setProperty('--scene-garland-y', `${8 + (sceneIndex * 13) % 70}%`);
+    decor.style.setProperty('--scene-ornament-y', `${12 + (sceneIndex * 19) % 68}%`);
+    decor.style.setProperty('--scene-ornament-y-alt', `${20 + (sceneIndex * 23) % 64}%`);
+    scene.prepend(decor);
+  });
+  const updateSnowParallax = () => {
+    const scrollY = window.scrollY || 0;
+    festiveSnowLayers.forEach((layer) => {
+      const depth = Number(layer.dataset.depth) || 0;
+      layer.style.setProperty('--snow-scroll-offset', `${reduceMotion ? 0 : -scrollY * depth}px`);
+    });
+  };
+  updateSnowParallax();
+  const applyFestiveMode = (enabled) => {
+    festiveEnabled = enabled;
+    document.body.classList.toggle('festive-off', !enabled);
+    festiveToggle?.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    const uk = document.documentElement.lang === 'uk';
+    const label = enabled
+      ? uk ? 'Вимкнути новорічні ефекти' : 'Turn off holiday effects'
+      : uk ? 'Увімкнути новорічні ефекти' : 'Turn on holiday effects';
+    festiveToggle?.setAttribute('aria-label', label);
+    festiveToggle?.setAttribute('title', label);
+  };
+  applyFestiveMode(festiveEnabled);
+  festiveToggle?.addEventListener('click', () => {
+    const enabled = !festiveEnabled;
+    applyFestiveMode(enabled);
+    try {
+      localStorage.setItem('festive-mode', enabled ? 'on' : 'off');
+    } catch (error) {
+      console.warn(`Could not save the festive mode preference: ${error.message}`);
+    }
+  });
   const progressBar = document.querySelector('.scroll-progress span');
   const scenes = [...document.querySelectorAll('main > section')];
   const railLinks = [...document.querySelectorAll('.chapter-rail a')];
@@ -40,142 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let filmVisible = false;
   let loadingFinishStarted = false;
   let motionFrame = 0;
-  const languageText = {
-    'Завантаження сайту': 'Loading the site',
-    'ПІДКЛЮЧАЮСЬ ДО СВІТУ': 'CONNECTING TO THE WORLD',
-    'Завантаження...': 'Loading...',
-    'Завантажую сцени...': 'Loading scenes...',
-    'Підключаю типографіку...': 'Setting the type...',
-    'Готую персонажа...': 'Getting the character ready...',
-    'Вибираю правильний формат...': 'Choosing the right format...',
-    'Завершую збірку...': 'Finishing the build...',
-    'Світ готовий!': 'The world is ready!',
-    'Навігація сторінкою': 'Page navigation',
-    'Знайти мене': 'Find me',
-    'Відкрити меню': 'Open menu',
-    'Закрити меню': 'Close menu',
-    'Розділи сайту': 'Page sections',
-    'Початок': 'Home',
-    'Про мене': 'About me',
-    'Персонажі': 'Characters',
-    'Гра': 'Game',
-    'Музика': 'Music',
-    'Контакти': 'Contact',
-    'Крамничка': 'Shop',
-    'Подяка': 'Thanks',
-    'Повернутися нагору': 'Back to top',
-    'Перегляд зображення': 'Image viewer',
-    'Закрити': 'Close',
-    'ПЕРСОНАЛЬНИЙ ПРОСТІР': 'MY PERSONAL SPACE',
-    'УКРАЇНА · ONLINE': 'UKRAINE · ONLINE',
-    'Привіт, я Nikitoss2ss': "Hey, I'm Nikitoss2ss",
-    'та Kuron': 'and Kuron',
-    'мій особистий простір': 'my personal space',
-    'Nikitoss2ss та Kuron — мій особистий простір': 'Nikitoss2ss and Kuron — my personal space',
-    'Nikitoss2ss та Kuron — мій особистий простір': 'Nikitoss2ss and Kuron — my personal space',
-    'Заходь далі — тут багато чого цікавого про мене!': "Come on in — there's lots to discover about me!",
-    'ДОСЛІДИТИ ПРОСТІР': 'EXPLORE MY WORLD',
-    'Соцмережі': 'Socials',
-    'SCROLL TO EXPLORE': 'SCROLL TO EXPLORE',
-    'ЗНАЙОМСТВО': 'A LITTLE INTRO',
-    'Мене звати': "My name is",
-    'Нікіта': 'Nikita',
-    ', мені': ", I'm",
-    'років (день народження —': 'years old (birthday —',
-    '5 січня': 'January 5',
-    '), проживаю на західній Україні. Я високий, худий, веселий і трохи сором\'язливий, але дуже люблю спілкування — особливо з тими, хто теж в темі фуррі чи ігор.': '), and I live in western Ukraine. I’m tall, slim, cheerful, and a little shy, but I love meeting people — especially fellow furries and gamers.',
-    'Про мене': 'About me',
-    'Чим цікавлюсь': 'What I’m into',
-    'Програмування та IT': 'Programming & IT',
-    'Техніка — люблю розбирати гаджети': 'Tech — I love taking gadgets apart',
-    '3D-моделювання та анімація': '3D modeling & animation',
-    'Веду прямі трансляції й веду YouTube (ліниво, але впевнено)': 'I stream and make YouTube videos (slowly, but surely)',
-    'Граю: Roblox, Minecraft, Fortnite, ZZZ та багато іншого': 'I play Roblox, Minecraft, Fortnite, ZZZ, and lots more',
-    'VR — Oculus Quest / Meta Quest': 'VR — Oculus Quest / Meta Quest',
-    'Малювання та створення артів': 'Drawing & making art',
-    'Мій нікнейм всюди —': 'My username everywhere is',
-    '. Люблю мультиплеєр і знайомства в іграх — шукаю нових фуррі друзів 😺': '. I love multiplayer games and meeting people in-game — always happy to make new furry friends 😺',
-    'Скопійовано': 'Copied',
-    'Скопійовано!': 'Copied!',
-    'Скопіювати?': 'Click to copy',
-    'N° 01 — QUICK FACTS': 'N° 01 — QUICK FACTS',
-    'Факти': 'Quick facts',
-    'Улюблені кольори:': 'Favorite colors:',
-    'червоний та помаранчевий ❤️🧡': 'red and orange ❤️🧡',
-    'Платформи:': 'Platforms:',
-    'ПК, Xbox, VR': 'PC, Xbox, VR',
-    'Фурсона:': 'Fursona:',
-    '— кемоно дракончик': ' — a kemono dragon',
-    'Стиль —': 'My style:',
-    'гумор, меми, ігри': 'humor, memes, games',
-    'ОБРАЗИ Й АЛЬТЕР ЕГО': 'CHARACTERS & ALTER EGOS',
-    'Мої персонажі': 'My characters',
-    'ТРИ ОБРАЗИ. ОДНА ІСТОРІЯ.': 'THREE CHARACTERS. ONE STORY.',
-    'Чорний кемоно дракончик з червоним животом, крилами і вогником на хвості.': 'A black kemono dragon with a red belly, wings, and a little flame on his tail.',
-    'Наліпки Kuron': 'Kuron stickers',
-    'Майн стиль': 'Minecraft style',
-    'Nikitoss2ss (Майн стиль)': 'Nikitoss2ss (Minecraft style)',
-    'Білий верх, чорні порвані джинси, капелюх самурая та вушками — мій основний образ.': 'A white top, ripped black jeans, a samurai hat, and ears — my main look.',
-    'У костюмі червоного дракона — для веселих серверних пригод.': 'In a red dragon suit, ready for fun adventures on the server.',
-    'Наліпки Nikitoss2ss': 'Nikitoss2ss stickers',
-    'СВІТ, ДО ЯКОГО ПОВЕРТАЮСЬ': 'A WORLD I RETURN TO',
-    'МОЯ УЛЮБЛЕНА ГРА': 'MY FAVORITE GAME',
-    'Найулюбленіша гра —': 'My all-time favorite game —',
-    'Люблю': 'I love',
-    'за унікальний стиль малювання, атмосферу, сюжет і саундтреки.': 'for its unique art style, atmosphere, story, and soundtrack.',
-    'Короткий опис: пригодницька point-and-click гра з фокусом на пазли, атмосферу та емоції.': 'A point-and-click adventure focused on puzzles, atmosphere, and emotion.',
-    'В магазині': 'Visit the store',
-    'ЗАРАЗ У МОЄМУ STEAM': 'ON MY STEAM',
-    'Що я граю': 'What I’m playing',
-    'зараз': 'right now',
-    'Топ-3 ігор за останні два тижні.': 'My top 3 games over the last two weeks.',
-    'Відкрити профіль Steam': 'Open my Steam profile',
-    'Завантажуємо статистику Steam...': 'Loading Steam stats...',
-    'САУНДТРЕК ЦЬОГО ПРОСТОРУ': 'THE SOUNDTRACK TO THIS SPACE',
-    'Мій топ': 'My top',
-    'пісень': 'tracks',
-    "ЗАЛИШАЙМОСЬ НА ЗВ'ЯЗКУ": 'LET’S KEEP IN TOUCH',
-    'Зацікавився?': 'Curious?',
-    'Приєднуйся!': 'Come say hi!',
-    'Нікнейм всюди —': 'My username everywhere is',
-    'Приєднатися до сервера': 'Join the server',
-    'Відкрити профіль': 'Open profile',
-    'МАЛЕНЬКИЙ ФРАГМЕНТ СВІТУ KURON': "A LITTLE PIECE OF KURON'S WORLD",
-    'ЗАТИШНИЙ КУТОЧОК СВІТУ KURON': "A LITTLE CORNER OF KURON'S WORLD",
-    'Обери те, що припало до душі: маленький талісман або стікер із твоїм настроєм.': 'Pick something you love: a little talisman or a sticker that feels like you.',
-    'Талісман Kuron': "Kuron's little talisman",
-    'МАЛЕНЬКИЙ ДРАКОН, ВЕЛИКА ПІДТРИМКА': 'A LITTLE DRAGON, A LOT OF HEART',
-    'Стікер із твоїм характером': 'A sticker with your personality',
-    'Обери настрій із прикладів або розкажи, що хочеш намалювати.': 'Pick a mood from the gallery or tell me what you would like me to draw.',
-    'Ідею та вільний слот обговоримо в Telegram — без форми й автоматичних замовлень.': 'We can discuss your idea and an open spot on Telegram — no forms or automatic orders.',
-    'Обговорити ідею': 'Talk about your idea',
-    'Обговорити фігурку': 'Discuss the figure',
-    'ЗА ОДИН СТІКЕР': 'PER STICKER',
-    'АНІМАЦІЯ GIF': 'GIF ANIMATION',
-    'Знижка 10% при замовленні від 3 стікерів однієї фурсони.': '10% off when ordering 3 or more stickers of the same fursona.',
-    'Віконця для замовлень': 'Commission spots',
-    'Перевіряю, коли зможу взяти нову ідею…': 'Checking when I can take on a new idea…',
-    'Створення може тривати до місяця — я поєдную замовлення з навчанням та іншими справами.': 'Creation can take up to a month depending on my workload, studies, and life outside the screen.',
-    'З ТЕПЛОМ І ВДЯЧНІСТЮ': 'WITH WARMTH & GRATITUDE',
-    'Подяка': 'Thanks',
-    'Дяка для': 'Thanks to',
-    'та': 'and',
-    'за LoRA і допомогу з генерацією зображень за допомогою ШІ.': 'for the LoRAs and help with AI image generation.',
-    'Підтримати:': 'Support:',
-    'НАГОРУ ↑': 'BACK TO TOP ↑',
-    '— всі права (майже) належать мені 😉': '— all rights (mostly) belong to me 😉',
-    'Оновлено:': 'Updated:',
-    'v 2.0.1 · Оновлено: 10.11.2026': 'v 2.0.1 · Updated: 10.11.2026',
-    'ГОД': 'HRS',
-    'ЧАС У ГРІ / ОСТАННІ 14 ДНІВ': 'PLAYTIME / LAST 14 DAYS',
-    'СТОРІНКА ГРИ ↗': 'GAME PAGE ↗',
-    'Не вдалося завантажити статистику Steam.': 'Could not load Steam stats.',
-    'Клацніть, щоб скопіювати': 'Click to copy',
-    'Копіювати?': 'Click to copy'
-  };
-  const englishLanguageText = Object.fromEntries(
-    Object.entries(languageText).map(([ukrainian, english]) => [english, ukrainian])
-  );
+  let languageText = {};
+  let englishLanguageText = {};
+  let aboutTranslations = null;
   const languageAttributes = {
     uk: {
       loader: 'Завантаження сайту',
@@ -242,10 +178,81 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (error) {
     console.warn(`Could not read the saved language preference: ${error.message}`);
   }
+  const getAge = (birthYear, birthMonth, birthDay) => {
+    const today = new Date();
+    let age = today.getFullYear() - birthYear;
+    if (today.getMonth() + 1 < birthMonth
+      || (today.getMonth() + 1 === birthMonth && today.getDate() < birthDay)) {
+      age -= 1;
+    }
+    return age;
+  };
   const applyLanguage = (language) => {
     currentLanguage = language;
     document.documentElement.lang = language;
     const attributes = languageAttributes[language];
+    const age = getAge(2009, 1, 5);
+    const aboutIntro = document.querySelector('#about-intro');
+    const aboutExtra = document.querySelector('#about-extra');
+    const aboutExtraGames = document.querySelector('#about-extra-games');
+    const aboutExtraFurry = document.querySelector('#about-extra-furry');
+    const localizedAbout = aboutTranslations?.[language];
+    if (localizedAbout) {
+      if (aboutIntro) aboutIntro.innerHTML = localizedAbout.intro.replace('{age}', String(age));
+      if (aboutExtra) aboutExtra.textContent = localizedAbout.extra;
+      if (aboutExtraGames) aboutExtraGames.textContent = localizedAbout.games;
+      if (aboutExtraFurry) aboutExtraFurry.textContent = localizedAbout.furry;
+    }
+    const interestItems = [...document.querySelectorAll('.interest-list li')];
+    const ukrainianInterests = aboutTranslations?.uk?.interests || [
+      ['💻 IT та програмування', 'розробка власних проєктів, експерименти з кодом та використання ШІ як помічника у програмуванні.'],
+      ['🔧 Техніка та електроніка', "комп'ютери, комплектуючі, розбирання, обслуговування та ремонт різноманітних пристроїв."],
+      ['🎨 Малювання', 'іноді створюю власні малюнки та цифрові арти.'],
+      ['📺 YouTube', 'веду власний канал та займаюся створенням контенту.'],
+      ['🎮 Відеоігри', 'люблю різноманітні жанри та ігри на кшталт Fortnite, Factorio, Roblox і Minecraft.'],
+      ['🎬 Анімація та творчість', 'вивчаю 2D- і 3D-анімацію, створюю стікери та експериментую з різними форматами контенту.']
+    ];
+    const englishInterests = aboutTranslations?.en?.interests || [
+      ['💻 IT & Programming', 'developing my own projects, experimenting with code, and using AI as a programming assistant.'],
+      ['🔧 Hardware & Electronics', 'computers, components, taking things apart, maintenance, and repairing various devices.'],
+      ['🎨 Drawing', 'sometimes creating my own pictures and digital art.'],
+      ['📺 YouTube', 'running my own channel and creating content.'],
+      ['🎮 Video Games', 'I enjoy many genres and games such as Fortnite, Factorio, Roblox, and Minecraft.'],
+      ['🎬 Animation & Creativity', 'learning 2D and 3D animation, making stickers, and experimenting with different content formats.']
+    ];
+    interestItems.forEach((item, index) => {
+      const content = item.querySelector('div');
+      if (!content) return;
+      const [title, description] = (language === 'en' ? englishInterests : ukrainianInterests)[index] || ['', ''];
+      content.innerHTML = `<strong>${title}</strong> — ${description}`;
+    });
+    const factItems = [...document.querySelectorAll('.facts-field li')];
+    const ukrainianFacts = aboutTranslations?.uk?.facts || [
+      '🎨 Улюблені кольори — <strong>червоний та помаранчевий</strong>.',
+      '🎂 День народження — <strong>5 січня</strong>.',
+      '🌐 Мій основний нікнейм — <strong>Nikitoss2ss</strong>.',
+      '🖥️ Основні платформи — <strong>PC та VR</strong>.',
+      '🍵 <strong>ОБОЖНЮЮ ЧАЙ!</strong> Мабуть, це вже окрема частина моєї особистості.',
+      '🎮 Люблю різноманітні жанри відеоігор, але <strong>шутери — точно не моє!</strong>',
+      '🎧 Мій улюблений музичний напрямок — <strong>Electronic Dance Music (EDM)</strong>.'
+    ];
+    const englishFacts = aboutTranslations?.en?.facts || [
+      '🎨 Favorite colors — <strong>red and orange</strong>.',
+      '🎂 Birthday — <strong>January 5</strong>.',
+      '🌐 My main username — <strong>Nikitoss2ss</strong>.',
+      '🖥️ Primary platforms — <strong>PC and VR</strong>.',
+      '🍵 <strong>I LOVE TEA!</strong> At this point, it’s probably a separate part of my personality.',
+      '🎮 I enjoy lots of video game genres, but <strong>shooters are definitely not for me!</strong>',
+      '🎧 My favorite music genre — <strong>Electronic Dance Music (EDM)</strong>.'
+    ];
+    factItems.forEach((item, index) => {
+      const content = item.querySelector('div');
+      if (content) content.innerHTML = (language === 'en' ? englishFacts : ukrainianFacts)[index] || '';
+    });
+    const interestsHeading = document.querySelector('.interests-block h3');
+    if (interestsHeading) interestsHeading.innerHTML = `${localizedAbout?.interestsHeading || (language === 'en' ? 'What I’m into' : 'Чим цікавлюсь')} <span>✨</span>`;
+    const factsHeading = document.querySelector('.facts-field h3');
+    if (factsHeading) factsHeading.textContent = localizedAbout?.factsHeading || (language === 'en' ? 'Quick facts' : 'Факти');
     languageTextNodes.forEach(({ node, original }) => {
       const source = original.trim();
       const translated = language === 'en' ? languageText[source] : null;
@@ -276,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('[data-carousel-direction="-1"]')?.setAttribute('aria-label', language === 'en' ? 'Previous example' : 'Попередній приклад');
     document.querySelector('[data-carousel-direction="1"]')?.setAttribute('aria-label', language === 'en' ? 'Next example' : 'Наступний приклад');
     document.querySelector('#shop-sticker-track')?.setAttribute('aria-label', language === 'en' ? 'Sticker examples' : 'Приклади стікерів');
-    document.querySelector('#shop-slots')?.setAttribute('aria-label', language === 'en' ? 'Four commission slots' : 'Чотири commission slots');
+    document.querySelector('#shop-slots')?.setAttribute('aria-label', language === 'en' ? 'Four commission slots' : 'Чотири комішки');
     document.querySelector('#shop-figure-image')?.setAttribute('alt', language === 'en' ? 'Kuron acrylic figure' : 'Акрилова фігурка Kuron');
     document.querySelectorAll('.copy-feedback').forEach((feedback) => {
       const copied = feedback.closest('.copied');
@@ -306,6 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.querySelector('.language-toggle')?.setAttribute('aria-label', attributes.langButton);
     document.querySelector('.language-toggle')?.setAttribute('title', attributes.langTitle);
+    applyFestiveMode(festiveEnabled);
     if (languageToggle) {
       languageToggle.querySelector('.language-toggle-label').textContent = language === 'en' ? 'UA' : 'EN';
     }
@@ -323,7 +331,29 @@ document.addEventListener('DOMContentLoaded', () => {
       ? 'Nikitoss2ss, also known as Kuron — developer, creator and animator.'
       : 'Nikitoss2ss, також відомий як Kuron — розробник, творець та аніматор.');
   };
-  applyLanguage(currentLanguage);
+  const loadTranslations = async () => {
+    try {
+      const [ukResponse, enResponse] = await Promise.all([
+        fetch('./ua.json', { cache: 'no-cache' }),
+        fetch('./en.json', { cache: 'no-cache' })
+      ]);
+      if (!ukResponse.ok || !enResponse.ok) throw new Error('Could not load language files');
+      const [ukTranslations, enTranslations] = await Promise.all([
+        ukResponse.json(),
+        enResponse.json()
+      ]);
+      languageText = enTranslations.translations || {};
+      englishLanguageText = ukTranslations.translations || {};
+      aboutTranslations = {
+        uk: ukTranslations.about || null,
+        en: enTranslations.about || null
+      };
+    } catch (error) {
+      console.warn(`Could not load external translations: ${error.message}`);
+    }
+    applyLanguage(currentLanguage);
+  };
+  loadTranslations();
   const shopDataStatus = document.querySelector('#shop-data-status');
   const defaultSpotifyTracks = [
     '3DbBCR0XKCTorWj4GXfsnN',
@@ -540,10 +570,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#shop-slots-summary').textContent = freeSlots
       ? shopLanguage === 'en'
         ? `${freeSlots} of 4 commission slots are open — message me on Telegram.`
-        : `Вільно ${freeSlots} із 4 commission slots — напиши мені в Telegram.`
+        : `Вільно ${freeSlots} із 4 комішок — напиши мені в Telegram.`
       : shopLanguage === 'en'
         ? 'All 4 commission slots are taken — I cannot take on new ideas right now.'
-        : 'Усі 4 commission slots зайняті — поки що не беру нових ідей.';
+        : 'Усі 4 комішки зайняті — поки що не беру нових ідей.';
     document.querySelector('#shop-discount').textContent = shopLanguage === 'en'
       ? `${shopData.discount.percent}% off when ordering ${shopData.discount.minimumQuantity} or more stickers of the same fursona.`
       : `Знижка ${shopData.discount.percent}% при замовленні від ${shopData.discount.minimumQuantity} стікерів однієї фурсони.`;
@@ -854,6 +884,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const updateScrollScene = () => {
     motionFrame = 0;
+    updateSnowParallax();
     const viewportHeight = window.innerHeight || 1;
     const pageRange = Math.max(1, document.documentElement.scrollHeight - viewportHeight);
     const pageProgress = clamp(window.scrollY / pageRange);
